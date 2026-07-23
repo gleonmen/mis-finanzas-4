@@ -14,6 +14,21 @@ export interface Template {
   frequency: string;
 }
 
+export interface Category {
+  id: number;
+  code: string;
+  transaction_type: TransactionType;
+}
+
+export interface TemplateWrite {
+  transaction_type: TransactionType;
+  category_id: number;
+  name: string;
+  is_essential: boolean | null;
+  default_amount: number;
+  frequency: string;
+}
+
 export interface MonthStatus {
   year: number;
   month: number;
@@ -47,6 +62,46 @@ async function readDetail(res: Response): Promise<string> {
     // ignore
   }
   return "";
+}
+
+export async function getTemplates(): Promise<Template[]> {
+  const res = await fetch(`${BASE_URL}/templates`);
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function getCategories(): Promise<Category[]> {
+  const res = await fetch(`${BASE_URL}/categories`);
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function createTemplate(payload: TemplateWrite): Promise<Template> {
+  const res = await fetch(`${BASE_URL}/templates`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function updateTemplate(
+  id: number,
+  payload: TemplateWrite,
+): Promise<Template> {
+  const res = await fetch(`${BASE_URL}/templates/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function deleteTemplate(id: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/templates/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
 }
 
 export async function getMonthStatus(

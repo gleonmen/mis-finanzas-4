@@ -36,6 +36,61 @@ export const frequencyNames: Record<string, string> = {
 
 export const es = {
   appTitle: "Finanzas",
+  tabs: {
+    templates: "Plantillas",
+    monthLoad: "Carga mensual",
+  },
+  templates: {
+    title: "Plantillas",
+    intro:
+      "Administrá tus plantillas de ingresos y gastos. Se usan como base para " +
+      "precargar los movimientos de cada mes.",
+    newButton: "Nueva plantilla",
+    edit: "Editar",
+    delete: "Borrar",
+    emptyState: "Todavía no tenés plantillas. Creá la primera para empezar.",
+    colType: "Tipo",
+    colCategory: "Categoría",
+    colName: "Concepto",
+    colEssential: "Esencial",
+    colAmount: "Valor por defecto",
+    colFrequency: "Periodicidad",
+    colActions: "",
+    essentialYes: "Sí",
+    essentialNo: "No",
+    essentialNA: "—",
+    loadError: "No se pudieron cargar las plantillas.",
+    deleted: "Plantilla borrada.",
+    created: "Plantilla creada.",
+    updated: "Plantilla actualizada.",
+    // form
+    formNewTitle: "Nueva plantilla",
+    formEditTitle: "Editar plantilla",
+    fieldType: "Tipo",
+    fieldTypeIncome: "Ingreso",
+    fieldTypeExpense: "Gasto",
+    fieldCategory: "Categoría",
+    fieldCategoryPlaceholder: "Elegí una categoría",
+    fieldName: "Concepto",
+    fieldNamePlaceholder: "Ej: Arriendo, Netflix, Sueldo…",
+    fieldEssential: "Es un gasto esencial",
+    fieldAmount: "Valor por defecto",
+    fieldFrequency: "Periodicidad",
+    save: "Guardar",
+    saving: "Guardando…",
+    cancel: "Cancelar",
+    errName: "El nombre es obligatorio.",
+    errAmount: "El valor debe ser mayor a cero.",
+    errCategory: "Elegí una categoría.",
+    genericError: "No se pudo guardar la plantilla. Intentá de nuevo.",
+    // delete confirm
+    confirmTitle: "Borrar plantilla",
+    confirmBody: (name: string) =>
+      `¿Seguro que querés borrar la plantilla "${name}"? Esta acción no se puede deshacer. ` +
+      `Los movimientos ya registrados no se ven afectados.`,
+    confirmDelete: "Borrar",
+    deleteError: "No se pudo borrar la plantilla. Intentá de nuevo.",
+  },
   monthLoad: {
     title: "Carga mensual de movimientos",
     intro:

@@ -1,9 +1,33 @@
+import { useState } from "react";
 import { MonthLoad } from "./pages/MonthLoad";
+import { Templates } from "./pages/Templates";
+import { es } from "./i18n/es";
+
+type Tab = "templates" | "monthLoad";
 
 export function App() {
+  const [tab, setTab] = useState<Tab>("templates");
+
   return (
     <div className="app">
-      <MonthLoad />
+      <nav className="tabs">
+        <button
+          type="button"
+          className={tab === "templates" ? "tab active" : "tab"}
+          onClick={() => setTab("templates")}
+        >
+          {es.tabs.templates}
+        </button>
+        <button
+          type="button"
+          className={tab === "monthLoad" ? "tab active" : "tab"}
+          onClick={() => setTab("monthLoad")}
+        >
+          {es.tabs.monthLoad}
+        </button>
+      </nav>
+
+      {tab === "templates" ? <Templates /> : <MonthLoad />}
     </div>
   );
 }
