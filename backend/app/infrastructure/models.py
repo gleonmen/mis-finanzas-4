@@ -6,10 +6,10 @@ validated by the DB's native enum types + CHECK constraints.
 """
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, Numeric, String
+from sqlalchemy import BigInteger, Boolean, Date, ForeignKey, Numeric, String
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -51,7 +51,8 @@ class TemplateModel(Base):
     is_essential: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     default_amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
     frequency: Mapped[Frequency] = mapped_column(_FREQUENCY)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    # created_at is filled by the DB default (now()); intentionally not mapped so
+    # inserts omit it instead of sending NULL.
 
 
 class TransactionModel(Base):

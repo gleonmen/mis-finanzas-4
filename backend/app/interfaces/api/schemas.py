@@ -19,6 +19,24 @@ class TemplateOut(BaseModel):
     frequency: Frequency
 
 
+class CategoryOut(BaseModel):
+    id: int
+    code: str
+    transaction_type: TransactionType
+
+
+class TemplateWriteIn(BaseModel):
+    """Body for creating/updating a template. is_essential applies to EXPENSE
+    only; for INCOME it is ignored (forced to None by the use case)."""
+
+    transaction_type: TransactionType
+    category_id: int
+    name: str = Field(min_length=1)
+    is_essential: bool | None = None
+    default_amount: Decimal = Field(gt=0)
+    frequency: Frequency
+
+
 class MonthStatusOut(BaseModel):
     year: int
     month: int

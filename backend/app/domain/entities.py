@@ -22,6 +22,15 @@ class Frequency(str, Enum):
 
 
 @dataclass(frozen=True)
+class Category:
+    """A fixed catalog category (a "group"). Not user-editable."""
+
+    id: int
+    code: str
+    transaction_type: TransactionType
+
+
+@dataclass(frozen=True)
 class Template:
     """A configurable movement "type"; preloads amount + frequency on entry."""
 
@@ -30,6 +39,19 @@ class Template:
     transaction_type: TransactionType
     category_code: str
     is_essential: bool | None  # required for EXPENSE, None for INCOME
+    default_amount: Decimal
+    frequency: Frequency
+
+
+@dataclass(frozen=True)
+class TemplateData:
+    """Write payload for creating/updating a template. Uses category_id (what the
+    UI selects), not category_code."""
+
+    transaction_type: TransactionType
+    category_id: int
+    name: str
+    is_essential: bool | None
     default_amount: Decimal
     frequency: Frequency
 

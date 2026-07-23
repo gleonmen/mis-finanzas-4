@@ -6,8 +6,19 @@ from datetime import date
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.domain.entities import Frequency, Template, Transaction, TransactionType
-from app.domain.repositories import TemplateRepository, TransactionRepository
+from app.domain.entities import (
+    Category,
+    Frequency,
+    Template,
+    TemplateData,
+    Transaction,
+    TransactionType,
+)
+from app.domain.repositories import (
+    CategoryRepository,
+    TemplateRepository,
+    TransactionRepository,
+)
 from app.infrastructure.models import CategoryModel, TemplateModel, TransactionModel
 
 
@@ -15,9 +26,52 @@ def _next_month(year: int, month: int) -> tuple[int, int]:
     return (year + 1, 1) if month == 12 else (year, month + 1)
 
 
+def _category_entity(model: CategoryModel) -> Category:
+    return Category(
+        id=model.id,
+        code=model.code,
+        transaction_type=TransactionType(model.transaction_type),
+    )
+
+
+class SqlAlchemyCategoryRepository(CategoryRepository):
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
+    def list_all(self) -> list[Category]:
+        rows = (
+            self._session.execute(
+                select(CategoryModel).order_by(
+                    CategoryModel.transaction_type, CategoryModel.id
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return [_category_entity(c) for c in rows]
+
+    def get(self, category_id: int) -> Category | None:
+        model = self._session.get(CategoryModel, category_id)
+        return None if model is None else _category_entity(model)
+
+
 class SqlAlchemyTemplateRepository(TemplateRepository):
     def __init__(self, session: Session) -> None:
         self._session = session
+
+    def _to_entity(self, model: TemplateModel) -> Template:
+        code = self._session.scalar(
+            select(CategoryModel.code).where(CategoryModel.id == model.category_id)
+        )
+        return Template(
+            id=model.id,
+            name=model.name,
+            transaction_type=TransactionType(model.transaction_type),
+            category_code=code or "",
+            is_essential=model.is_essential,
+            default_amount=model.default_amount,
+            frequency=Frequency(model.frequency),
+        )
 
     def list_all(self) -> list[Template]:
         rows = self._session.execute(
@@ -37,6 +91,44 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
             )
             for tpl, code in rows
         ]
+
+    def get(self, template_id: int) -> Template | None:
+        model = self._session.get(TemplateModel, template_id)
+        return None if model is None else self._to_entity(model)
+
+    def create(self, data: TemplateData) -> Template:
+        model = TemplateModel(
+            name=data.name,
+            transaction_type=data.transaction_type,
+            category_id=data.category_id,
+            is_essential=data.is_essential,
+            default_amount=data.default_amount,
+            frequency=data.frequency,
+        )
+        self._session.add(model)
+        self._session.flush()
+        return self._to_entity(model)
+
+    def update(self, template_id: int, data: TemplateData) -> Template | None:
+        model = self._session.get(TemplateModel, template_id)
+        if model is None:
+            return None
+        model.name = data.name
+        model.transaction_type = data.transaction_type
+        model.category_id = data.category_id
+        model.is_essential = data.is_essential
+        model.default_amount = data.default_amount
+        model.frequency = data.frequency
+        self._session.flush()
+        return self._to_entity(model)
+
+    def delete(self, template_id: int) -> bool:
+        model = self._session.get(TemplateModel, template_id)
+        if model is None:
+            return False
+        self._session.delete(model)
+        self._session.flush()
+        return True
 
 
 class SqlAlchemyTransactionRepository(TransactionRepository):

@@ -12,3 +12,11 @@ class EmptyDraftError(Exception):
 
 class InvalidDraftLineError(Exception):
     """A draft line failed validation (unknown template, bad amount/date)."""
+
+
+class TemplateValidationError(Exception):
+    """A template create/update failed a business rule (name/amount/category/type)."""
+
+
+class TemplateNotFoundError(Exception):
+    """The referenced template does not exist."""
