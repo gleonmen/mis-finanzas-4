@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.interfaces.api import routes_month_load, routes_templates
 
 app = FastAPI(title="Finanzas API", version="0.1.0")
 
@@ -18,6 +19,5 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-# Feature routers are wired here as they are implemented (tasks 4-8):
-#   app.include_router(templates_router)
-#   app.include_router(month_load_router)
+app.include_router(routes_templates.router)
+app.include_router(routes_month_load.router)
