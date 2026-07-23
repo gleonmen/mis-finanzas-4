@@ -105,6 +105,15 @@ ese spec sin desviarse; cualquier discrepancia que surja se marca explícitament
   Los sub-ítems del usuario quedan documentados como **ejemplos/hints** por categoría
   (útiles al crear templates), no como filas de BD.
 
+**3b. Seed de templates de ejemplo (0003) — añadido durante implementación**
+- **Qué**: sembrar ~15 templates de ejemplo para que la carga mensual tenga datos que
+  copiar (no hay CRUD de templates en este slice).
+- **Dónde**: `supabase/migrations/0003_seed_dev_templates.sql`.
+- **Detalles**: templates de dev (editables, se resetean con `compose down -v`), usando
+  los sub-ítems de la lista del usuario como `name`. Decisión acordada con el usuario:
+  para este slice se siembran ejemplos; el CRUD real de templates queda como desarrollo
+  futuro (spec/plan aparte).
+
 ### Backend (Clean Architecture)
 
 **4. Capa de dominio: entidades y puertos**
