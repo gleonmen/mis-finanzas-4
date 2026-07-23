@@ -1,11 +1,34 @@
 # proyecto-finanzas-4
 
-**Estado actual:** proyecto recién iniciado, aún sin código. Este archivo es la
-especificación de arranque; `README.md` y `docs/PLAN.md` se crearán al construir.
+**Estado actual:** MVP en desarrollo, con base y dos features completos y verificados.
+Ver detalle en "Estado del proyecto" más abajo. `README.md` documenta el arranque.
 
 ## Qué es
 App de finanzas personales (MVP, **single-user, sin auth**). React+TS (Vite) /
 Python+FastAPI / Postgres (Supabase). Stack objetivo, pensado para correr dockerizado.
+
+## Estado del proyecto
+
+Construido y verificado (cada feature recorrió el ciclo brainstorming → spec → plan
+→ implementar → verify):
+
+- **Scaffolding** — Docker (`db`/`api`/`web`), backend Clean Architecture, frontend
+  Vite+React+TS, git en `main`.
+- **Capa de datos** — `supabase/migrations/`: `0001` esquema (categories/templates/
+  transactions), `0002` seed de 14 categorías fijas, `0003` seed de ~15 templates de
+  ejemplo (datos de dev, editables desde la UI).
+- **Carga mensual desde templates** — elegir un mes, precargar una grilla con todos
+  los templates (valor por defecto + fecha día 1), editar/descartar y confirmar en un
+  commit batch atómico. Guard por presencia (bloquea si el mes ya tiene movimientos).
+- **CRUD de plantillas** — pantalla con tabs (Plantillas / Carga mensual): crear,
+  listar, editar y borrar (hard delete) plantillas. Formulario modal con categoría
+  filtrada por tipo e `is_essential` solo en gasto.
+
+Frontend: navegación por **tabs en estado local** (sin router). Specs en `docs/specs/`
+y planes en `docs/plans/` (emparejados por fecha-título).
+
+**Próximo paso natural del MVP:** reportes por caja (mensuales/anuales) + gráficas
+(usar skill dataviz y `frontend/src/lib/colors.ts`).
 
 ## Convenciones
 - **Código en inglés** (tablas, columnas, variables, funciones, comentarios).
@@ -26,9 +49,11 @@ Python+FastAPI / Postgres (Supabase). Stack objetivo, pensado para correr docker
 - **Reportes por caja**: un monto cae completo en su mes; los anuales NO se
   prorratean. `frequency` es solo metadato, no afecta cálculos.
 - `is_essential`: obligatorio en `EXPENSE`, `NULL` en `INCOME`.
-- **Categorías fijas**, se sembrarán en `supabase/migrations/0002_seed_categories.sql`,
-  no editables por el usuario. FK compuesta `(category_id, transaction_type)`
-  garantiza a nivel de BD que la categoría corresponde al tipo.
+- **Categorías fijas** (14: 6 INCOME + 8 EXPENSE), sembradas en
+  `supabase/migrations/0002_seed_categories.sql`, no editables por el usuario. FK
+  compuesta `(category_id, transaction_type)` garantiza a nivel de BD que la categoría
+  corresponde al tipo. El snapshot de transactions guarda `category_code` (texto
+  estable), no una FK viva, para sobrevivir a cambios del catálogo.
 
 ## Arquitectura backend (Clean Architecture)
 `domain → application → infrastructure/interfaces`. Dependencias apuntan al dominio;
@@ -37,19 +62,22 @@ SQLAlchemy en `infrastructure/`. Composition root (wiring de deps) en
 `interfaces/api/deps.py`. Lógica de negocio SOLO en `application/use_cases/`.
 
 ## Entorno de desarrollo (importante)
-El scaffolding (Docker, `docker-compose`, migraciones) aún no existe; esto es el
-flujo previsto para cuando el código esté en su sitio.
+El scaffolding (Docker, `docker-compose`, migraciones) ya está en su sitio.
 - El host tiene **Python 3.11 y sin Node** → correr tests/builds **dentro de Docker**:
   - Backend tests: `docker run --rm -v "$PWD":/app -w /app python:3.12-slim bash -c "pip install -e '.[dev]' && pytest -q"` (desde `backend/`).
   - Frontend build/typecheck: `docker run --rm -v "$PWD":/app -w /app node:20-alpine sh -c "npm install && npm run build"` (desde `frontend/`).
-- Stack completo: `docker compose up -d --build`. Las migraciones se aplican solas
-  al Postgres local vía `/docker-entrypoint-initdb.d` (orden por nombre: 0001, 0002).
-  `docker compose down -v` resetea los datos.
+- Stack completo: `docker compose up -d --build` (web `:5173`, api `:8000`, db `:5432`).
+  Las migraciones se aplican solas al Postgres local vía `/docker-entrypoint-initdb.d`
+  (orden por nombre: 0001, 0002, 0003). `docker compose down -v` resetea los datos.
+- Nota de esquema/ORM: los modelos SQLAlchemy mapean sobre el esquema de las
+  migraciones (no lo crean). Enums nativos de Postgres vía `SAEnum(..., create_type=
+  False)`; columnas `created_at` no se mapean para que el INSERT use el `DEFAULT now()`.
 
 ## Git
-Pendiente: `git init` + configurar identidad **local al repo** (no global). Config
-prevista: rama `main`, remoto SSH `git@github.com:gleonmen/finanzas-by-plan-4.git`,
-identidad `gleonmen <gleonmen@gmail.com>`.
+Repo inicializado en rama `main` con identidad **local al repo** (no global):
+`gleonmen <gleonmen@gmail.com>`. Remoto SSH previsto (aún sin configurar):
+`git@github.com:gleonmen/finanzas-by-plan-4.git`. Commits por feature siguiendo el
+ciclo (db → backend → frontend).
 
 ## Flujo de trabajo (features nuevos)
 
