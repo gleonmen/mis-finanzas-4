@@ -23,12 +23,18 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
 - **CRUD de plantillas** — pantalla con tabs (Plantillas / Carga mensual): crear,
   listar, editar y borrar (hard delete) plantillas. Formulario modal con categoría
   filtrada por tipo e `is_essential` solo en gasto.
+- **Reportes gráficos por caja** — tab Reportes con vista mensual y anual:
+  KPI tiles (ingresos/gastos/neto), gasto por categoría (barra horizontal, top 7 +
+  "Otros", con tabla completa), meter de esencial vs no esencial, y en la anual la
+  evolución de 12 meses (línea de 2 series) más el neto por mes (barra divergente).
+  Un endpoint por vista (`/reports/monthly/{y}/{m}`, `/reports/annual/{y}`) con las
+  agregaciones ya calculadas. **Recharts** es la única dependencia de UI.
 
 Frontend: navegación por **tabs en estado local** (sin router). Specs en `docs/specs/`
 y planes en `docs/plans/` (emparejados por fecha-título).
 
-**Próximo paso natural del MVP:** reportes por caja (mensuales/anuales) + gráficas
-(usar skill dataviz y `frontend/src/lib/colors.ts`).
+**Próximo paso natural del MVP:** a definir (p. ej. comparar períodos, presupuestos,
+o exportar) — todo eso quedó explícitamente fuera del alcance de los reportes v1.
 
 ## Convenciones
 - **Código en inglés** (tablas, columnas, variables, funciones, comentarios).
@@ -36,8 +42,15 @@ y planes en `docs/plans/` (emparejados por fecha-título).
   Nunca hardcodear texto de usuario en componentes; agregar al diccionario i18n.
 - Moneda/locale centralizados en `frontend/src/lib/format.ts` (default COP `es-CO`,
   miles con punto). No formatear números fuera de ahí.
-- Colores de gráficas: paleta fija validada (skill dataviz) en `frontend/src/lib/colors.ts`.
+- Colores de gráficas: paleta fija **ya validada** con el skill dataviz en
+  `frontend/src/lib/colors.ts` (ALL CHECKS PASS sobre la superficie `#ffffff`).
   El color sigue al `code` de categoría, en orden fijo — no reasignar por ranking.
+  Ingreso (6) y egreso (8) son **escalas separadas** para no pasar de 8 hues; la cola
+  se pliega en "Otros" en gris neutro. **No elegir hues a mano**: cambiarlos solo
+  re-corriendo `scripts/validate_palette.js` del skill.
+- Formas de gráfica: seguir el skill dataviz (números cabecera → stat tiles, no
+  grouped bar; una razón → meter, no pie de 2 gajos; nunca dual-axis; tabla-twin
+  por gráfica).
 
 ## Modelo de dominio (reglas clave)
 - **Templates** = los "tipos" configurables: `category` + `is_essential` +
