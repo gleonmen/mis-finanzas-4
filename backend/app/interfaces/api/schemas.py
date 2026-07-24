@@ -56,3 +56,47 @@ class MonthLoadIn(BaseModel):
 
 class MonthLoadOut(BaseModel):
     created: int
+
+
+# --- Reports ---------------------------------------------------------------
+
+
+class TotalsOut(BaseModel):
+    income: Decimal
+    expense: Decimal
+    net: Decimal  # may be negative
+
+
+class CategoryAmountOut(BaseModel):
+    category_code: str  # "OTHER" for the folded tail
+    amount: Decimal
+
+
+class EssentialSplitOut(BaseModel):
+    essential: Decimal
+    non_essential: Decimal
+
+
+class MonthPointOut(BaseModel):
+    month: int
+    income: Decimal
+    expense: Decimal
+    net: Decimal
+
+
+class MonthlyReportOut(BaseModel):
+    year: int
+    month: int
+    totals: TotalsOut
+    by_category: list[CategoryAmountOut]  # full detail (table source of truth)
+    by_category_chart: list[CategoryAmountOut]  # top N + OTHER
+    essential: EssentialSplitOut
+
+
+class AnnualReportOut(BaseModel):
+    year: int
+    totals: TotalsOut
+    by_category: list[CategoryAmountOut]
+    by_category_chart: list[CategoryAmountOut]
+    essential: EssentialSplitOut
+    monthly_series: list[MonthPointOut]  # always 12 points

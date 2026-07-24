@@ -2,13 +2,18 @@
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 
-from sqlalchemy import func, select
+from sqlalchemy import extract, func, select
 from sqlalchemy.orm import Session
 
 from app.domain.entities import (
     Category,
+    CategoryAmount,
+    EssentialSplit,
     Frequency,
+    MonthPoint,
+    PeriodTotals,
     Template,
     TemplateData,
     Transaction,
@@ -16,14 +21,22 @@ from app.domain.entities import (
 )
 from app.domain.repositories import (
     CategoryRepository,
+    ReportRepository,
     TemplateRepository,
     TransactionRepository,
 )
 from app.infrastructure.models import CategoryModel, TemplateModel, TransactionModel
 
+ZERO = Decimal("0")
+
 
 def _next_month(year: int, month: int) -> tuple[int, int]:
     return (year + 1, 1) if month == 12 else (year, month + 1)
+
+
+def _dec(value) -> Decimal:
+    """Normalize a SUM result (which is NULL on an empty set) to Decimal."""
+    return ZERO if value is None else Decimal(value)
 
 
 def _category_entity(model: CategoryModel) -> Category:
@@ -129,6 +142,86 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
         self._session.delete(model)
         self._session.flush()
         return True
+
+
+class SqlAlchemyReportRepository(ReportRepository):
+    """Cash-basis aggregations in SQL. All ranges are half-open [start, end) on
+    occurred_on, which uses idx_transactions_occurred_on. `frequency` is never
+    part of any calculation."""
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
+    def _in_range(self, start: date, end: date):
+        return (TransactionModel.occurred_on >= start) & (
+            TransactionModel.occurred_on < end
+        )
+
+    def totals(self, start: date, end: date) -> PeriodTotals:
+        income_sum = func.sum(TransactionModel.amount).filter(
+            TransactionModel.transaction_type == TransactionType.INCOME
+        )
+        expense_sum = func.sum(TransactionModel.amount).filter(
+            TransactionModel.transaction_type == TransactionType.EXPENSE
+        )
+        row = self._session.execute(
+            select(income_sum, expense_sum)
+            .select_from(TransactionModel)
+            .where(self._in_range(start, end))
+        ).one()
+        income, expense = _dec(row[0]), _dec(row[1])
+        return PeriodTotals(income=income, expense=expense, net=income - expense)
+
+    def expense_by_category(self, start: date, end: date) -> list[CategoryAmount]:
+        total = func.sum(TransactionModel.amount).label("total")
+        rows = self._session.execute(
+            select(TransactionModel.category_code, total)
+            .where(self._in_range(start, end))
+            .where(TransactionModel.transaction_type == TransactionType.EXPENSE)
+            .group_by(TransactionModel.category_code)
+            .order_by(total.desc())
+        ).all()
+        return [
+            CategoryAmount(category_code=code, amount=_dec(amount))
+            for code, amount in rows
+        ]
+
+    def essential_split(self, start: date, end: date) -> EssentialSplit:
+        rows = self._session.execute(
+            select(TransactionModel.is_essential, func.sum(TransactionModel.amount))
+            .where(self._in_range(start, end))
+            .where(TransactionModel.transaction_type == TransactionType.EXPENSE)
+            .group_by(TransactionModel.is_essential)
+        ).all()
+        essential, non_essential = ZERO, ZERO
+        for is_essential, amount in rows:
+            if is_essential:
+                essential = _dec(amount)
+            else:
+                non_essential = _dec(amount)
+        return EssentialSplit(essential=essential, non_essential=non_essential)
+
+    def monthly_series(self, year: int) -> list[MonthPoint]:
+        month_col = extract("month", TransactionModel.occurred_on).label("month")
+        income_sum = func.sum(TransactionModel.amount).filter(
+            TransactionModel.transaction_type == TransactionType.INCOME
+        )
+        expense_sum = func.sum(TransactionModel.amount).filter(
+            TransactionModel.transaction_type == TransactionType.EXPENSE
+        )
+        rows = self._session.execute(
+            select(month_col, income_sum, expense_sum)
+            .where(self._in_range(date(year, 1, 1), date(year + 1, 1, 1)))
+            .group_by(month_col)
+            .order_by(month_col)
+        ).all()
+        points = []
+        for month, income, expense in rows:
+            inc, exp = _dec(income), _dec(expense)
+            points.append(
+                MonthPoint(month=int(month), income=inc, expense=exp, net=inc - exp)
+            )
+        return points
 
 
 class SqlAlchemyTransactionRepository(TransactionRepository):

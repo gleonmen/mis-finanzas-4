@@ -44,6 +44,41 @@ class Template:
 
 
 @dataclass(frozen=True)
+class PeriodTotals:
+    """Cash-basis totals for a period. net may be negative (spent more than earned)."""
+
+    income: Decimal
+    expense: Decimal
+    net: Decimal
+
+
+@dataclass(frozen=True)
+class CategoryAmount:
+    """Total amount for one category within a period."""
+
+    category_code: str
+    amount: Decimal
+
+
+@dataclass(frozen=True)
+class EssentialSplit:
+    """Expense split by is_essential. Income does not participate."""
+
+    essential: Decimal
+    non_essential: Decimal
+
+
+@dataclass(frozen=True)
+class MonthPoint:
+    """One month of the annual series. Months without data come through as zeros."""
+
+    month: int  # 1-12
+    income: Decimal
+    expense: Decimal
+    net: Decimal
+
+
+@dataclass(frozen=True)
 class TemplateData:
     """Write payload for creating/updating a template. Uses category_id (what the
     UI selects), not category_code."""

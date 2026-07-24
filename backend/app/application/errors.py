@@ -20,3 +20,7 @@ class TemplateValidationError(Exception):
 
 class TemplateNotFoundError(Exception):
     """The referenced template does not exist."""
+
+
+class InvalidPeriodError(Exception):
+    """The requested report period (year/month) is out of range."""

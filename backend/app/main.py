@@ -5,6 +5,7 @@ from app.config import settings
 from app.interfaces.api import (
     routes_categories,
     routes_month_load,
+    routes_reports,
     routes_templates,
 )
 
@@ -26,3 +27,4 @@ def health() -> dict[str, str]:
 app.include_router(routes_templates.router)
 app.include_router(routes_categories.router)
 app.include_router(routes_month_load.router)
+app.include_router(routes_reports.router)
