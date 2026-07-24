@@ -5,7 +5,7 @@ React+TS (Vite) / Python+FastAPI / Postgres, dockerizado.
 
 ## Qué hace
 
-La app se organiza en tres pestañas:
+La app se organiza en cuatro pestañas:
 
 - **Plantillas** — el catálogo de movimientos recurrentes (los "tipos": categoría,
   valor por defecto, periodicidad, y si el gasto es esencial). CRUD completo.
@@ -18,12 +18,15 @@ La app se organiza en tres pestañas:
 - **Reportes** — vista mensual y anual: ingresos/gastos/neto, gasto por categoría,
   cuánto del gasto es esencial, y la evolución mes a mes del año.
 
-Dos reglas de dominio que explican el resto:
+Tres reglas de dominio que explican el resto:
 
 - **Reportes por caja**: un monto cae completo en el mes de su fecha. Los anuales
   **no** se prorratean; la periodicidad es solo un dato descriptivo.
 - **Snapshot**: cada movimiento guarda una foto de los datos de su plantilla, así
   que editar o borrar una plantilla nunca altera los reportes ya cargados.
+- **El tipo es inmutable**: un movimiento nace como ingreso o gasto y no cambia.
+  Eso mantiene coherentes la categoría (que depende del tipo) y la marca de
+  esencial. Si el tipo quedó mal, se borra el movimiento y se crea de nuevo.
 
 ## Stack
 
@@ -92,8 +95,8 @@ backend/app/
   infrastructure/  # adaptadores SQLAlchemy de los puertos
   interfaces/api/  # routers + schemas + deps.py (composition root)
 frontend/src/
-  pages/           # una pantalla por pestaña (Templates, MonthLoad, Reports)
-  components/      # grilla, modal, gráficas (Recharts)
+  pages/           # una pantalla por pestaña (Templates, MonthLoad, Movements, Reports)
+  components/      # grilla, modal, formularios, gráficas (Recharts)
   i18n/es.ts       # textos de usuario (keyed por code en inglés)
   lib/format.ts    # formato moneda/locale (COP, es-CO)
   lib/colors.ts    # paleta fija VALIDADA, color por code de categoría
