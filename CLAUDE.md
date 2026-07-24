@@ -94,10 +94,10 @@ El scaffolding (Docker, `docker-compose`, migraciones) ya está en su sitio.
   False)`; columnas `created_at` no se mapean para que el INSERT use el `DEFAULT now()`.
 
 ## Git
-Repo inicializado en rama `main` con identidad **local al repo** (no global):
-`gleonmen <gleonmen@gmail.com>`. Remoto SSH previsto (aún sin configurar):
-`git@github.com:gleonmen/finanzas-by-plan-4.git`. Commits por feature siguiendo el
-ciclo (db → backend → frontend).
+Repo en rama `main` con identidad **local al repo** (no global):
+`gleonmen <gleonmen@gmail.com>`. Remoto SSH configurado:
+`origin` → `git@github.com:gleonmen/mis-finanzas-4.git`. Commits por feature
+siguiendo el ciclo (db → backend → frontend).
 
 ## Flujo de trabajo (features nuevos)
 
