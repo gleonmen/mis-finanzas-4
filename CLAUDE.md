@@ -30,6 +30,13 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   Un endpoint por vista (`/reports/monthly/{y}/{m}`, `/reports/annual/{y}`) con las
   agregaciones ya calculadas. **Recharts** es la única dependencia de UI.
 
+- **Gestión de movimientos** — tab Movimientos con filtro por mes: listar con los
+  totales del mes, crear un movimiento suelto (sin plantilla), editar y borrar.
+  El **tipo es inmutable** una vez creado (el use case lo toma del movimiento
+  existente e ignora el payload). Un movimiento ad-hoc se graba `ONE_TIME` con
+  `template_id` NULL. Borrar todos los movimientos de un mes **libera el guard** y
+  permite recargarlo — es la vía para rehacer un mes mal cargado.
+
 Frontend: navegación por **tabs en estado local** (sin router). Specs en `docs/specs/`
 y planes en `docs/plans/` (emparejados por fecha-título).
 

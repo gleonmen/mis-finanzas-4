@@ -12,6 +12,9 @@ La app se organiza en tres pestañas:
 - **Carga mensual** — elegís un mes y se precarga una grilla con todas las
   plantillas; ajustás valor y fecha, descartás lo que no aplique y confirmás todo
   en una sola operación atómica. Si el mes ya tiene movimientos, se bloquea.
+- **Movimientos** — los movimientos de cada mes con sus totales: corregí uno que
+  quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla.
+  Si vaciás un mes, la carga mensual vuelve a habilitarse para él.
 - **Reportes** — vista mensual y anual: ingresos/gastos/neto, gasto por categoría,
   cuánto del gasto es esencial, y la evolución mes a mes del año.
 
@@ -71,6 +74,10 @@ docker run --rm -v "$PWD":/app -w /app node:20-alpine \
 | `DELETE` | `/templates/{id}` | Borrar plantilla (hard delete) |
 | `GET` | `/months/{año}/{mes}/status` | Plantillas + si el mes ya fue cargado |
 | `POST` | `/months/{año}/{mes}/load` | Confirmar la carga mensual (batch atómico) |
+| `GET` | `/transactions/{año}/{mes}` | Movimientos del mes + totales |
+| `POST` | `/transactions` | Crear un movimiento suelto |
+| `PUT` | `/transactions/{id}` | Editar un movimiento (el tipo no cambia) |
+| `DELETE` | `/transactions/{id}` | Borrar un movimiento |
 | `GET` | `/reports/monthly/{año}/{mes}` | Paquete completo del reporte mensual |
 | `GET` | `/reports/annual/{año}` | Paquete completo del reporte anual |
 
@@ -110,3 +117,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Carga mensual desde plantillas | [spec](docs/specs/2026-07-22-carga-mensual-desde-templates.md) | [plan](docs/plans/2026-07-22-carga-mensual-desde-templates.md) |
 | Gestión de plantillas (CRUD) | [spec](docs/specs/2026-07-22-gestion-de-plantillas-crud.md) | [plan](docs/plans/2026-07-22-gestion-de-plantillas-crud.md) |
 | Reportes gráficos por caja | [spec](docs/specs/2026-07-23-reportes-graficos-por-caja.md) | [plan](docs/plans/2026-07-23-reportes-graficos-por-caja.md) |
+| Gestión de movimientos | [spec](docs/specs/2026-07-24-gestion-de-movimientos.md) | [plan](docs/plans/2026-07-24-gestion-de-movimientos.md) |
