@@ -369,3 +369,184 @@ button:disabled {
   gap: 0.6rem;
   margin-top: 0.5rem;
 }
+
+/* ---------------- Reports ---------------- */
+
+.period-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem;
+}
+
+/* Only the first letter — `capitalize` would also uppercase the "de" in
+   "julio de 2026". */
+.period-label::first-letter {
+  text-transform: uppercase;
+}
+
+.filter-row {
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.seg {
+  border: none;
+  border-radius: 0;
+  padding: 0.45rem 0.9rem;
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.seg.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.inline-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.inline-field select,
+.inline-field input {
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.inline-field input[type="number"] {
+  width: 100px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* KPI row (stat tiles — not a chart) */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.kpi-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Proportional figures on display numbers — never tabular-nums here. */
+.kpi-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.kpi-note {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Report tables: the value source of truth. Aligned digits belong here. */
+.report-table {
+  margin-top: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-table .total-row td {
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+}
+
+/* Essential meter (a single ratio — not a 2-slice pie) */
+.meter-headline {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.meter-headline strong {
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.meter {
+  display: flex;
+  gap: 2px; /* 2px surface gap between fills — never a border */
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  display: block;
+  height: 100%;
+}
+
+.meter-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.meter-legend strong {
+  color: var(--text);
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 0;
+  text-decoration: underline;
+}

@@ -39,6 +39,44 @@ export const es = {
   tabs: {
     templates: "Plantillas",
     monthLoad: "Carga mensual",
+    reports: "Reportes",
+  },
+  reports: {
+    title: "Reportes",
+    intro:
+      "Mirá en qué se te va la plata, cuánto entra contra cuánto sale, y cómo " +
+      "evolucionás a lo largo del año.",
+    viewMonthly: "Mensual",
+    viewAnnual: "Anual",
+    monthLabel: "Mes",
+    yearLabel: "Año",
+    // KPI tiles
+    totalIncome: "Ingresos",
+    totalExpense: "Gastos",
+    net: "Neto",
+    netPositive: "Te sobró",
+    netNegative: "Te faltó",
+    // charts
+    byCategoryTitle: "Gasto por categoría",
+    byCategoryEmpty: "No hay gastos en este período.",
+    otherCategory: "Otros",
+    essentialTitle: "Cuánto de tu gasto es esencial",
+    essential: "Esencial",
+    nonEssential: "No esencial",
+    trendTitle: "Evolución mes a mes",
+    netByMonthTitle: "Neto por mes",
+    // tables
+    tableCategory: "Categoría",
+    tableAmount: "Monto",
+    tableShare: "% del gasto",
+    tableMonth: "Mes",
+    tableTotal: "Total",
+    // states
+    empty: "No hay movimientos en este período.",
+    noIncome: "No hay ingresos en este período.",
+    noExpense: "No hay gastos en este período.",
+    loadError: "No se pudo cargar el reporte.",
+    retry: "Reintentar",
   },
   templates: {
     title: "Plantillas",
