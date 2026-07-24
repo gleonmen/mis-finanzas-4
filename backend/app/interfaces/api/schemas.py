@@ -58,6 +58,43 @@ class MonthLoadOut(BaseModel):
     created: int
 
 
+# --- Transactions ----------------------------------------------------------
+
+
+class TransactionOut(BaseModel):
+    id: int
+    transaction_type: TransactionType
+    category_code: str
+    name: str
+    is_essential: bool | None
+    frequency: Frequency
+    amount: Decimal
+    occurred_on: date
+    template_id: int | None
+
+
+class TransactionWriteIn(BaseModel):
+    """Body for creating/updating a movement.
+
+    On update `transaction_type` is ignored: the type is fixed at creation.
+    `occurred_on` is free — it need not fall in any particular month.
+    """
+
+    transaction_type: TransactionType
+    category_id: int
+    name: str = Field(min_length=1)
+    is_essential: bool | None = None
+    amount: Decimal = Field(gt=0)
+    occurred_on: date
+
+
+class TransactionCreatedOut(BaseModel):
+    transaction: TransactionOut
+    # True when the movement is now the only one in its month, so the monthly
+    # load is blocked there.
+    blocks_monthly_load: bool
+
+
 # --- Reports ---------------------------------------------------------------
 
 
@@ -100,3 +137,11 @@ class AnnualReportOut(BaseModel):
     by_category_chart: list[CategoryAmountOut]
     essential: EssentialSplitOut
     monthly_series: list[MonthPointOut]  # always 12 points
+
+
+# Defined here (after TotalsOut) so the reference resolves without a forward ref.
+class MonthTransactionsOut(BaseModel):
+    year: int
+    month: int
+    totals: TotalsOut
+    items: list[TransactionOut]

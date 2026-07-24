@@ -8,11 +8,13 @@ from app.domain.entities import (
     Category,
     CategoryAmount,
     EssentialSplit,
+    Frequency,
     MonthPoint,
     PeriodTotals,
     Template,
     TemplateData,
     Transaction,
+    TransactionData,
 )
 
 
@@ -56,6 +58,35 @@ class TransactionRepository(ABC):
     @abstractmethod
     def bulk_create(self, transactions: list[Transaction]) -> int:
         """Persist all transactions atomically. Returns the number created."""
+
+    @abstractmethod
+    def list_in_month(self, year: int, month: int) -> list[Transaction]:
+        """Movements of the month, ordered by date then id."""
+
+    @abstractmethod
+    def get(self, transaction_id: int) -> Transaction | None:
+        """Return a movement by id, or None if it does not exist."""
+
+    @abstractmethod
+    def create_one(
+        self,
+        data: TransactionData,
+        category_code: str,
+        frequency: Frequency,
+        template_id: int | None = None,
+    ) -> Transaction:
+        """Persist a single movement and return it with its id."""
+
+    @abstractmethod
+    def update(
+        self, transaction_id: int, data: TransactionData, category_code: str
+    ) -> Transaction | None:
+        """Update the editable fields. Type, frequency and template_id are
+        preserved. Returns None if the movement does not exist."""
+
+    @abstractmethod
+    def delete(self, transaction_id: int) -> bool:
+        """Delete a movement. True if a row was deleted."""
 
 
 class ReportRepository(ABC):

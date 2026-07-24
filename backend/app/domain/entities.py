@@ -44,6 +44,22 @@ class Template:
 
 
 @dataclass(frozen=True)
+class TransactionData:
+    """Write payload for creating/updating a movement. Uses category_id (what the
+    UI selects); the use case resolves the category_code kept in the snapshot.
+
+    On update the transaction_type is IGNORED: the type is fixed at creation.
+    """
+
+    transaction_type: TransactionType
+    category_id: int
+    name: str
+    is_essential: bool | None
+    amount: Decimal
+    occurred_on: date
+
+
+@dataclass(frozen=True)
 class PeriodTotals:
     """Cash-basis totals for a period. net may be negative (spent more than earned)."""
 

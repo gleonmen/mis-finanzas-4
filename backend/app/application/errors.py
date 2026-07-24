@@ -24,3 +24,11 @@ class TemplateNotFoundError(Exception):
 
 class InvalidPeriodError(Exception):
     """The requested report period (year/month) is out of range."""
+
+
+class TransactionValidationError(Exception):
+    """A movement create/update failed a business rule."""
+
+
+class TransactionNotFoundError(Exception):
+    """The referenced movement does not exist."""

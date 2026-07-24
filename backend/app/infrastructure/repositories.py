@@ -17,6 +17,7 @@ from app.domain.entities import (
     Template,
     TemplateData,
     Transaction,
+    TransactionData,
     TransactionType,
 )
 from app.domain.repositories import (
@@ -258,3 +259,80 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
         # API dependency commits once on success and rolls back on any error.
         self._session.flush()
         return len(models)
+
+    def _to_entity(self, model: TransactionModel) -> Transaction:
+        return Transaction(
+            id=model.id,
+            transaction_type=TransactionType(model.transaction_type),
+            category_code=model.category_code,
+            name=model.name,
+            is_essential=model.is_essential,
+            frequency=Frequency(model.frequency),
+            amount=model.amount,
+            occurred_on=model.occurred_on,
+            template_id=model.template_id,
+        )
+
+    def list_in_month(self, year: int, month: int) -> list[Transaction]:
+        start = date(year, month, 1)
+        ny, nm = _next_month(year, month)
+        rows = (
+            self._session.execute(
+                select(TransactionModel)
+                .where(TransactionModel.occurred_on >= start)
+                .where(TransactionModel.occurred_on < date(ny, nm, 1))
+                .order_by(TransactionModel.occurred_on, TransactionModel.id)
+            )
+            .scalars()
+            .all()
+        )
+        return [self._to_entity(m) for m in rows]
+
+    def get(self, transaction_id: int) -> Transaction | None:
+        model = self._session.get(TransactionModel, transaction_id)
+        return None if model is None else self._to_entity(model)
+
+    def create_one(
+        self,
+        data: TransactionData,
+        category_code: str,
+        frequency: Frequency,
+        template_id: int | None = None,
+    ) -> Transaction:
+        model = TransactionModel(
+            transaction_type=data.transaction_type,
+            category_code=category_code,
+            name=data.name,
+            is_essential=data.is_essential,
+            frequency=frequency,
+            amount=data.amount,
+            occurred_on=data.occurred_on,
+            template_id=template_id,
+        )
+        self._session.add(model)
+        self._session.flush()
+        return self._to_entity(model)
+
+    def update(
+        self, transaction_id: int, data: TransactionData, category_code: str
+    ) -> Transaction | None:
+        model = self._session.get(TransactionModel, transaction_id)
+        if model is None:
+            return None
+        # Only the editable fields. transaction_type, frequency and template_id
+        # are deliberately left untouched.
+        model.category_code = category_code
+        model.name = data.name
+        model.is_essential = data.is_essential
+        model.amount = data.amount
+        model.occurred_on = data.occurred_on
+        self._session.flush()
+        return self._to_entity(model)
+
+    def delete(self, transaction_id: int) -> bool:
+        model = self._session.get(TransactionModel, transaction_id)
+        if model is None:
+            return False
+        self._session.delete(model)
+        self._session.flush()
+        return True
