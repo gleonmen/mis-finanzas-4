@@ -39,7 +39,67 @@ export const es = {
   tabs: {
     templates: "Plantillas",
     monthLoad: "Carga mensual",
+    movements: "Movimientos",
     reports: "Reportes",
+  },
+  movements: {
+    title: "Movimientos",
+    intro:
+      "Revisá y corregí los movimientos de cada mes. También podés registrar " +
+      "un gasto o ingreso suelto que no venga de una plantilla.",
+    monthLabel: "Mes",
+    newButton: "Nuevo movimiento",
+    edit: "Editar",
+    delete: "Borrar",
+    emptyState: "No hay movimientos en este mes. Podés crear uno o cargarlo desde tus plantillas.",
+    loadError: "No se pudieron cargar los movimientos.",
+    // columns
+    colType: "Tipo",
+    colCategory: "Categoría",
+    colName: "Concepto",
+    colEssential: "Esencial",
+    colAmount: "Valor",
+    colDate: "Fecha",
+    colActions: "",
+    essentialYes: "Sí",
+    essentialNo: "No",
+    essentialNA: "—",
+    // form
+    formNewTitle: "Nuevo movimiento",
+    formEditTitle: "Editar movimiento",
+    fieldType: "Tipo",
+    fieldTypeIncome: "Ingreso",
+    fieldTypeExpense: "Gasto",
+    fieldTypeLocked: "El tipo no se puede cambiar. Si está mal, borrá el movimiento y creá uno nuevo.",
+    fieldCategory: "Categoría",
+    fieldCategoryPlaceholder: "Elegí una categoría",
+    fieldName: "Concepto",
+    fieldNamePlaceholder: "Ej: Taxi, Reintegro, Multa…",
+    fieldEssential: "Es un gasto esencial",
+    fieldAmount: "Valor",
+    fieldDate: "Fecha",
+    save: "Guardar",
+    saving: "Guardando…",
+    cancel: "Cancelar",
+    errName: "El concepto es obligatorio.",
+    errAmount: "El valor debe ser mayor a cero.",
+    errCategory: "Elegí una categoría.",
+    errDate: "La fecha es obligatoria.",
+    genericError: "No se pudo guardar el movimiento. Intentá de nuevo.",
+    // feedback
+    created: "Movimiento creado.",
+    updated: "Movimiento actualizado.",
+    deleted: "Movimiento borrado.",
+    savedInOtherMonth: (monthYear: string) =>
+      `El movimiento quedó registrado en ${monthYear}, por eso no aparece en esta lista.`,
+    blocksMonthlyLoad: (monthYear: string) =>
+      `Ojo: ${monthYear} ya tiene movimientos, así que la carga mensual quedará bloqueada para ese mes.`,
+    // delete confirm
+    confirmTitle: "Borrar movimiento",
+    confirmBody: (name: string) =>
+      `¿Seguro que querés borrar "${name}"? Esta acción no se puede deshacer.`,
+    confirmDelete: "Borrar",
+    deleteError: "No se pudo borrar el movimiento. Intentá de nuevo.",
   },
   reports: {
     title: "Reportes",

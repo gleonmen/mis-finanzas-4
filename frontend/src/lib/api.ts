@@ -46,6 +46,42 @@ export interface MonthLoadResult {
   created: number;
 }
 
+// --- Transactions ----------------------------------------------------------
+
+export interface Transaction {
+  id: number;
+  transaction_type: TransactionType;
+  category_code: string;
+  name: string;
+  is_essential: boolean | null;
+  frequency: string;
+  amount: string;
+  occurred_on: string; // YYYY-MM-DD
+  template_id: number | null;
+}
+
+export interface TransactionWrite {
+  transaction_type: TransactionType;
+  category_id: number;
+  name: string;
+  is_essential: boolean | null;
+  amount: number;
+  occurred_on: string;
+}
+
+export interface MonthTransactions {
+  year: number;
+  month: number;
+  totals: Totals;
+  items: Transaction[];
+}
+
+export interface TransactionCreated {
+  transaction: Transaction;
+  /** The month just went from empty to non-empty: the monthly load is now blocked. */
+  blocks_monthly_load: boolean;
+}
+
 // --- Reports ---------------------------------------------------------------
 
 /** Amounts arrive as decimal strings; convert with Number() at the edge. */
@@ -145,6 +181,45 @@ export async function updateTemplate(
 
 export async function deleteTemplate(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/templates/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+}
+
+export async function getMonthTransactions(
+  year: number,
+  month: number,
+): Promise<MonthTransactions> {
+  const res = await fetch(`${BASE_URL}/transactions/${year}/${month}`);
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function createTransaction(
+  payload: TransactionWrite,
+): Promise<TransactionCreated> {
+  const res = await fetch(`${BASE_URL}/transactions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function updateTransaction(
+  id: number,
+  payload: TransactionWrite,
+): Promise<Transaction> {
+  const res = await fetch(`${BASE_URL}/transactions/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
+}
+
+export async function deleteTransaction(id: number): Promise<void> {
+  const res = await fetch(`${BASE_URL}/transactions/${id}`, { method: "DELETE" });
   if (!res.ok) throw new ApiError(res.status, await readDetail(res));
 }
 

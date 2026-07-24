@@ -195,6 +195,13 @@ button:disabled {
   margin-top: 0.2rem;
 }
 
+.field-hint {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.2rem;
+  font-weight: 400;
+}
+
 .discard {
   color: var(--expense);
   border-color: var(--border);
