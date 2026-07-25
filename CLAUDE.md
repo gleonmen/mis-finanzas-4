@@ -24,9 +24,11 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   listar, editar y borrar (hard delete) plantillas. Formulario modal con categoría
   filtrada por tipo e `is_essential` solo en gasto.
 - **Reportes gráficos por caja** — tab Reportes con vista mensual y anual:
-  KPI tiles (ingresos/gastos/neto), gasto por categoría (barra horizontal, top 7 +
-  "Otros", con tabla completa), meter de esencial vs no esencial, y en la anual la
-  evolución de 12 meses (línea de 2 series) más el neto por mes (barra divergente).
+  KPI tiles (ingresos/gastos/neto), ingreso por categoría y gasto por categoría
+  (ambos barra horizontal + tabla; el de gasto pliega top 7 + "Otros", el de ingreso
+  entra completo por tener ≤6 categorías), meter de esencial vs no esencial, y en la
+  anual la evolución de 12 meses (línea de 2 series) más el neto por mes (barra
+  divergente).
   Un endpoint por vista (`/reports/monthly/{y}/{m}`, `/reports/annual/{y}`) con las
   agregaciones ya calculadas. **Recharts** es la única dependencia de UI.
 

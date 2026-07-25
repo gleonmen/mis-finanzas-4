@@ -15,8 +15,9 @@ La app se organiza en cuatro pestañas:
 - **Movimientos** — los movimientos de cada mes con sus totales: corregí uno que
   quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla.
   Si vaciás un mes, la carga mensual vuelve a habilitarse para él.
-- **Reportes** — vista mensual y anual: ingresos/gastos/neto, gasto por categoría,
-  cuánto del gasto es esencial, y la evolución mes a mes del año.
+- **Reportes** — vista mensual y anual: ingresos/gastos/neto, ingreso por categoría
+  (de dónde viene la plata), gasto por categoría, cuánto del gasto es esencial, y la
+  evolución mes a mes del año.
 
 Tres reglas de dominio que explican el resto:
 
@@ -121,3 +122,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Gestión de plantillas (CRUD) | [spec](docs/specs/2026-07-22-gestion-de-plantillas-crud.md) | [plan](docs/plans/2026-07-22-gestion-de-plantillas-crud.md) |
 | Reportes gráficos por caja | [spec](docs/specs/2026-07-23-reportes-graficos-por-caja.md) | [plan](docs/plans/2026-07-23-reportes-graficos-por-caja.md) |
 | Gestión de movimientos | [spec](docs/specs/2026-07-24-gestion-de-movimientos.md) | [plan](docs/plans/2026-07-24-gestion-de-movimientos.md) |
+| Ingresos por categoría | [spec](docs/specs/2026-07-25-ingresos-por-categoria.md) | [plan](docs/plans/2026-07-25-ingresos-por-categoria.md) |
