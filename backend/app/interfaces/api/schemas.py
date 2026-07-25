@@ -127,6 +127,7 @@ class MonthlyReportOut(BaseModel):
     totals: TotalsOut
     by_category: list[CategoryAmountOut]  # full detail (table source of truth)
     by_category_chart: list[CategoryAmountOut]  # top N + OTHER
+    income_by_category: list[CategoryAmountOut]  # income breakdown (no OTHER)
     essential: EssentialSplitOut
 
 
@@ -135,6 +136,7 @@ class AnnualReportOut(BaseModel):
     totals: TotalsOut
     by_category: list[CategoryAmountOut]
     by_category_chart: list[CategoryAmountOut]
+    income_by_category: list[CategoryAmountOut]
     essential: EssentialSplitOut
     monthly_series: list[MonthPointOut]  # always 12 points
 

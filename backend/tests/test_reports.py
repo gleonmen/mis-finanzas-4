@@ -38,13 +38,19 @@ class FakeReportRepo:
         expense = sum((r["amount"] for r in rows if r["type"] == "EXPENSE"), ZERO)
         return PeriodTotals(income=income, expense=expense, net=income - expense)
 
-    def expense_by_category(self, start, end):
+    def _by_category(self, start, end, tx_type):
         acc = {}
         for r in self._in(start, end):
-            if r["type"] == "EXPENSE":
+            if r["type"] == tx_type:
                 acc[r["category"]] = acc.get(r["category"], ZERO) + r["amount"]
         ordered = sorted(acc.items(), key=lambda kv: kv[1], reverse=True)
         return [CategoryAmount(category_code=c, amount=a) for c, a in ordered]
+
+    def expense_by_category(self, start, end):
+        return self._by_category(start, end, "EXPENSE")
+
+    def income_by_category(self, start, end):
+        return self._by_category(start, end, "INCOME")
 
     def essential_split(self, start, end):
         ess, non = ZERO, ZERO
@@ -196,3 +202,48 @@ def test_annual_totals_equal_sum_of_twelve_months():
 def test_annual_series_always_has_twelve_points():
     result = AnnualReport(FakeReportRepo()).execute(2026)
     assert len(result.monthly_series) == 12
+
+
+# --- income by category ----------------------------------------------------
+
+def test_income_by_category_sorted_desc_and_sums_to_income_total():
+    repo = FakeReportRepo([
+        row("INCOME", "salaries", None, "3500000", date(2026, 7, 1)),
+        row("INCOME", "freelance", None, "800000", date(2026, 7, 12)),
+        row("INCOME", "rentals", None, "1200000", date(2026, 7, 20)),
+        row("EXPENSE", "transport", True, "250000", date(2026, 7, 5)),  # ignored
+    ])
+    result = MonthlyReport(repo).execute(2026, 7)
+    codes = [c.category_code for c in result.income_by_category]
+    assert codes == ["salaries", "rentals", "freelance"]  # desc by amount
+    # Invariant: the income breakdown sums to the income total.
+    assert sum(c.amount for c in result.income_by_category) == result.totals.income
+
+
+def test_income_by_category_omits_categories_without_movements():
+    repo = FakeReportRepo([
+        row("INCOME", "salaries", None, "3500000", date(2026, 7, 1)),
+    ])
+    result = MonthlyReport(repo).execute(2026, 7)
+    assert [c.category_code for c in result.income_by_category] == ["salaries"]
+
+
+def test_income_by_category_empty_when_no_income():
+    repo = FakeReportRepo([
+        row("EXPENSE", "transport", True, "250000", date(2026, 7, 5)),
+    ])
+    result = MonthlyReport(repo).execute(2026, 7)
+    assert result.income_by_category == []
+
+
+def test_annual_income_by_category_present():
+    repo = FakeReportRepo([
+        row("INCOME", "salaries", None, "1000", date(2026, 3, 1)),
+        row("INCOME", "business", None, "4000", date(2026, 9, 1)),
+    ])
+    result = AnnualReport(repo).execute(2026)
+    assert [c.category_code for c in result.income_by_category] == [
+        "business",
+        "salaries",
+    ]
+    assert sum(c.amount for c in result.income_by_category) == result.totals.income

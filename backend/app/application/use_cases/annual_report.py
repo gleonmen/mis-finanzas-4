@@ -23,6 +23,7 @@ class AnnualReportResult:
     totals: PeriodTotals
     by_category: list[CategoryAmount]
     by_category_chart: list[CategoryAmount]
+    income_by_category: list[CategoryAmount]
     essential: EssentialSplit
     monthly_series: list[MonthPoint]  # always 12 points, in order
 
@@ -45,6 +46,7 @@ class AnnualReport:
             totals=totals,
             by_category=by_category,
             by_category_chart=collapse_to_top(by_category),
+            income_by_category=self._repo.income_by_category(start, end),
             essential=essential,
             monthly_series=series,
         )

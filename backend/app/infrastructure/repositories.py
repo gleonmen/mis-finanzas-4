@@ -173,12 +173,14 @@ class SqlAlchemyReportRepository(ReportRepository):
         income, expense = _dec(row[0]), _dec(row[1])
         return PeriodTotals(income=income, expense=expense, net=income - expense)
 
-    def expense_by_category(self, start: date, end: date) -> list[CategoryAmount]:
+    def _by_category(
+        self, start: date, end: date, tx_type: TransactionType
+    ) -> list[CategoryAmount]:
         total = func.sum(TransactionModel.amount).label("total")
         rows = self._session.execute(
             select(TransactionModel.category_code, total)
             .where(self._in_range(start, end))
-            .where(TransactionModel.transaction_type == TransactionType.EXPENSE)
+            .where(TransactionModel.transaction_type == tx_type)
             .group_by(TransactionModel.category_code)
             .order_by(total.desc())
         ).all()
@@ -186,6 +188,12 @@ class SqlAlchemyReportRepository(ReportRepository):
             CategoryAmount(category_code=code, amount=_dec(amount))
             for code, amount in rows
         ]
+
+    def expense_by_category(self, start: date, end: date) -> list[CategoryAmount]:
+        return self._by_category(start, end, TransactionType.EXPENSE)
+
+    def income_by_category(self, start: date, end: date) -> list[CategoryAmount]:
+        return self._by_category(start, end, TransactionType.INCOME)
 
     def essential_split(self, start: date, end: date) -> EssentialSplit:
         rows = self._session.execute(

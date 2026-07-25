@@ -17,6 +17,9 @@ class MonthlyReportResult:
     # (top N + "Otros"). Both sum to the same total.
     by_category: list[CategoryAmount]
     by_category_chart: list[CategoryAmount]
+    # Income breakdown by category. Income has <= 6 categories, so no "Otros"
+    # folding: the full list feeds both the chart and the table.
+    income_by_category: list[CategoryAmount]
     essential: EssentialSplit
 
 
@@ -39,5 +42,6 @@ class MonthlyReport:
             totals=totals,
             by_category=by_category,
             by_category_chart=collapse_to_top(by_category),
+            income_by_category=self._repo.income_by_category(start, end),
             essential=essential,
         )

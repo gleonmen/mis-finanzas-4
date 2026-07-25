@@ -105,6 +105,10 @@ class ReportRepository(ABC):
         """Expense totals per category, ordered by amount descending."""
 
     @abstractmethod
+    def income_by_category(self, start: date, end: date) -> list[CategoryAmount]:
+        """Income totals per category, ordered by amount descending."""
+
+    @abstractmethod
     def essential_split(self, start: date, end: date) -> EssentialSplit:
         """Expense split into essential / non-essential."""
 

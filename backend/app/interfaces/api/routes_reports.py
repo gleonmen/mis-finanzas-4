@@ -51,6 +51,7 @@ def monthly_report(
         totals=_totals(result.totals),
         by_category=_categories(result.by_category),
         by_category_chart=_categories(result.by_category_chart),
+        income_by_category=_categories(result.income_by_category),
         essential=_essential(result.essential),
     )
 
@@ -66,6 +67,7 @@ def annual_report(year: YearPath, use_case: AnnualReportDep) -> AnnualReportOut:
         totals=_totals(result.totals),
         by_category=_categories(result.by_category),
         by_category_chart=_categories(result.by_category_chart),
+        income_by_category=_categories(result.income_by_category),
         essential=_essential(result.essential),
         monthly_series=[
             MonthPointOut(
