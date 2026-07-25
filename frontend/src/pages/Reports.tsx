@@ -137,6 +137,16 @@ export function Reports() {
                 <AnnualTrend series={annual.monthly_series} />
               )}
 
+              {/* Money in: where the income comes from. */}
+              <CategoryBars
+                chartData={report.income_by_category}
+                fullData={report.income_by_category}
+                title={t.byIncomeTitle}
+                shareLabel={t.tableShareIncome}
+                emptyText={t.byIncomeEmpty}
+              />
+
+              {/* Money out: expense composition (top 7 + "Otros"). */}
               <CategoryBars
                 chartData={report.by_category_chart}
                 fullData={report.by_category}

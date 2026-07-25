@@ -119,6 +119,9 @@ export const es = {
     // charts
     byCategoryTitle: "Gasto por categoría",
     byCategoryEmpty: "No hay gastos en este período.",
+    byIncomeTitle: "Ingreso por categoría",
+    byIncomeEmpty: "No hay ingresos en este período.",
+    tableShareIncome: "% del ingreso",
     otherCategory: "Otros",
     essentialTitle: "Cuánto de tu gasto es esencial",
     essential: "Esencial",

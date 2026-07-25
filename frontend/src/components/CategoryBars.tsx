@@ -14,26 +14,35 @@ import { formatCompact, formatCurrency } from "../lib/format";
 import { categoryNames, es } from "../i18n/es";
 
 /**
- * Composition of spending. A horizontal bar sorted desc — NOT a donut: donuts are
- * an anti-pattern for comparing close values and past ~6 segments, and the Spanish
- * category names are long, which horizontal bars handle. Identity is carried by the
- * axis label, so it never depends on color alone (which also satisfies the
- * contrast "relief" rule for the sub-3:1 slots).
+ * Composition of amounts by category. A horizontal bar sorted desc — NOT a donut:
+ * donuts are an anti-pattern for comparing close values and past ~6 segments, and
+ * the Spanish category names are long, which horizontal bars handle. Identity is
+ * carried by the axis label, so it never depends on color alone (which also
+ * satisfies the contrast "relief" rule for the sub-3:1 slots).
+ *
+ * Used for both expense and income breakdowns; the labels default to the expense
+ * strings so the existing call site is unchanged.
  */
 export function CategoryBars({
   chartData,
   fullData,
+  title = es.reports.byCategoryTitle,
+  shareLabel = es.reports.tableShare,
+  emptyText = es.reports.byCategoryEmpty,
 }: {
   chartData: CategoryAmount[];
   fullData: CategoryAmount[];
+  title?: string;
+  shareLabel?: string;
+  emptyText?: string;
 }) {
   const t = es.reports;
 
   if (fullData.length === 0) {
     return (
       <section className="card">
-        <h2>{t.byCategoryTitle}</h2>
-        <p className="muted">{t.byCategoryEmpty}</p>
+        <h2>{title}</h2>
+        <p className="muted">{emptyText}</p>
       </section>
     );
   }
@@ -53,7 +62,7 @@ export function CategoryBars({
 
   return (
     <section className="card">
-      <h2>{t.byCategoryTitle}</h2>
+      <h2>{title}</h2>
       <div style={{ width: "100%", height }}>
         <ResponsiveContainer>
           <BarChart
@@ -106,7 +115,7 @@ export function CategoryBars({
           <tr>
             <th>{t.tableCategory}</th>
             <th className="num">{t.tableAmount}</th>
-            <th className="num">{t.tableShare}</th>
+            <th className="num">{shareLabel}</th>
           </tr>
         </thead>
         <tbody>

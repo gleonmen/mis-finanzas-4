@@ -114,6 +114,7 @@ export interface MonthlyReport {
   totals: Totals;
   by_category: CategoryAmount[];
   by_category_chart: CategoryAmount[];
+  income_by_category: CategoryAmount[];
   essential: EssentialSplit;
 }
 
@@ -122,6 +123,7 @@ export interface AnnualReport {
   totals: Totals;
   by_category: CategoryAmount[];
   by_category_chart: CategoryAmount[];
+  income_by_category: CategoryAmount[];
   essential: EssentialSplit;
   monthly_series: MonthPoint[];
 }
