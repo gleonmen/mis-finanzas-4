@@ -22,7 +22,9 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   commit batch atómico. Guard por presencia (bloquea si el mes ya tiene movimientos).
 - **CRUD de plantillas** — pantalla con tabs (Plantillas / Carga mensual): crear,
   listar, editar y borrar (hard delete) plantillas. Formulario modal con categoría
-  filtrada por tipo e `is_essential` solo en gasto.
+  filtrada por tipo e `is_essential` solo en gasto. La lista se muestra en dos
+  secciones (Ingresos / Egresos) con orden fijo en el frontend (`lib/templateSort.ts`):
+  categoría (orden canónico) → esenciales primero (egresos) → valor desc.
 - **Reportes gráficos por caja** — tab Reportes con vista mensual y anual:
   KPI tiles (ingresos/gastos/neto), ingreso por categoría y gasto por categoría
   (ambos barra horizontal + tabla; el de gasto pliega top 7 + "Otros", el de ingreso
