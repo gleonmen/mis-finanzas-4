@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ApiError,
   deleteTemplate,
@@ -9,6 +9,7 @@ import {
 } from "../lib/api";
 import { formatCurrency } from "../lib/format";
 import { categoryColor } from "../lib/colors";
+import { categoryRank, groupByType } from "../lib/templateSort";
 import {
   categoryNames,
   es,
@@ -94,6 +95,77 @@ export function Templates() {
     return tpl.is_essential ? t.essentialYes : t.essentialNo;
   }
 
+  // Split into income/expense and sort each group (fixed order). Recomputes when
+  // templates or the category order change, so a new/edited template lands in place.
+  const { income, expense } = useMemo(
+    () => groupByType(templates, categoryRank(categories)),
+    [templates, categories],
+  );
+
+  function renderSection(title: string, rows: Template[], emptyText: string) {
+    return (
+      <section className="template-section">
+        <h2>{title}</h2>
+        {rows.length === 0 ? (
+          <div className="banner banner-warning">{emptyText}</div>
+        ) : (
+          <table className="grid">
+            <thead>
+              <tr>
+                <th>{t.colType}</th>
+                <th>{t.colCategory}</th>
+                <th>{t.colName}</th>
+                <th>{t.colEssential}</th>
+                <th className="num">{t.colAmount}</th>
+                <th>{t.colFrequency}</th>
+                <th>{t.colActions}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((tpl) => (
+                <tr key={tpl.id}>
+                  <td>
+                    <span className={`pill pill-${tpl.transaction_type.toLowerCase()}`}>
+                      {transactionTypeNames[tpl.transaction_type]}
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      className="cat-dot"
+                      style={{ backgroundColor: categoryColor(tpl.category_code) }}
+                    />
+                    {categoryNames[tpl.category_code] ?? tpl.category_code}
+                  </td>
+                  <td>{tpl.name}</td>
+                  <td>{essentialLabel(tpl)}</td>
+                  <td className="num">
+                    {formatCurrency(Math.round(Number(tpl.default_amount)))}
+                  </td>
+                  <td>{frequencyNames[tpl.frequency] ?? tpl.frequency}</td>
+                  <td className="row-actions">
+                    <button type="button" onClick={() => openEdit(tpl)}>
+                      {t.edit}
+                    </button>
+                    <button
+                      type="button"
+                      className="discard"
+                      onClick={() => {
+                        setDeleteError(null);
+                        setDeleting(tpl);
+                      }}
+                    >
+                      {t.delete}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+    );
+  }
+
   return (
     <section className="templates">
       <h1>{t.title}</h1>
@@ -108,61 +180,11 @@ export function Templates() {
       {feedback && <div className="banner banner-success">{feedback}</div>}
       {loadError && <div className="banner banner-error">{loadError}</div>}
 
-      {!loading && !loadError && templates.length === 0 && (
-        <div className="banner banner-warning">{t.emptyState}</div>
-      )}
-
-      {templates.length > 0 && (
-        <table className="grid">
-          <thead>
-            <tr>
-              <th>{t.colType}</th>
-              <th>{t.colCategory}</th>
-              <th>{t.colName}</th>
-              <th>{t.colEssential}</th>
-              <th className="num">{t.colAmount}</th>
-              <th>{t.colFrequency}</th>
-              <th>{t.colActions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {templates.map((tpl) => (
-              <tr key={tpl.id}>
-                <td>
-                  <span className={`pill pill-${tpl.transaction_type.toLowerCase()}`}>
-                    {transactionTypeNames[tpl.transaction_type]}
-                  </span>
-                </td>
-                <td>
-                  <span
-                    className="cat-dot"
-                    style={{ backgroundColor: categoryColor(tpl.category_code) }}
-                  />
-                  {categoryNames[tpl.category_code] ?? tpl.category_code}
-                </td>
-                <td>{tpl.name}</td>
-                <td>{essentialLabel(tpl)}</td>
-                <td className="num">{formatCurrency(Math.round(Number(tpl.default_amount)))}</td>
-                <td>{frequencyNames[tpl.frequency] ?? tpl.frequency}</td>
-                <td className="row-actions">
-                  <button type="button" onClick={() => openEdit(tpl)}>
-                    {t.edit}
-                  </button>
-                  <button
-                    type="button"
-                    className="discard"
-                    onClick={() => {
-                      setDeleteError(null);
-                      setDeleting(tpl);
-                    }}
-                  >
-                    {t.delete}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {!loading && !loadError && (
+        <>
+          {renderSection(t.sectionIncome, income, t.emptyIncome)}
+          {renderSection(t.sectionExpense, expense, t.emptyExpense)}
+        </>
       )}
 
       {formOpen && (

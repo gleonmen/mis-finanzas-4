@@ -254,6 +254,17 @@ button:disabled {
   border-bottom-color: var(--accent);
 }
 
+/* Template sections (Ingresos / Egresos) */
+.template-section {
+  margin-top: 1.75rem;
+}
+
+.template-section h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+}
+
 /* Row actions */
 .row-actions {
   display: flex;

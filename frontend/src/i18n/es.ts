@@ -149,8 +149,12 @@ export const es = {
     newButton: "Nueva plantilla",
     edit: "Editar",
     delete: "Borrar",
-    emptyState: "Todavía no tenés plantillas. Creá la primera para empezar.",
+    sectionIncome: "Ingresos",
+    sectionExpense: "Egresos",
+    emptyIncome: "No tenés plantillas de ingreso todavía.",
+    emptyExpense: "No tenés plantillas de gasto todavía.",
     colType: "Tipo",
+    // (emptyState removed: each section now has its own empty state)
     colCategory: "Categoría",
     colName: "Concepto",
     colEssential: "Esencial",
