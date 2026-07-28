@@ -24,7 +24,11 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   listar, editar y borrar (hard delete) plantillas. Formulario modal con categoría
   filtrada por tipo e `is_essential` solo en gasto. La lista se muestra en dos
   secciones (Ingresos / Egresos) con orden fijo en el frontend (`lib/templateSort.ts`):
-  categoría (orden canónico) → esenciales primero (egresos) → valor desc.
+  categoría (orden canónico) → esenciales primero (egresos) → valor desc. Además,
+  subtotal por categoría y resumen por sección como **equivalente mensual**
+  (`lib/templateTotals.ts`: anual÷12, etc.; Único excluido; egresos separan esencial
+  de no esencial). Es una vista de planeación sobre valores por defecto, distinta de
+  los reportes por caja.
 - **Reportes gráficos por caja** — tab Reportes con vista mensual y anual:
   KPI tiles (ingresos/gastos/neto), ingreso por categoría y gasto por categoría
   (ambos barra horizontal + tabla; el de gasto pliega top 7 + "Otros", el de ingreso

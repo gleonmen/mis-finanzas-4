@@ -10,7 +10,10 @@ La app se organiza en cuatro pestañas:
 - **Plantillas** — el catálogo de movimientos recurrentes (los "tipos": categoría,
   valor por defecto, periodicidad, y si el gasto es esencial). CRUD completo. La lista
   se muestra en dos secciones (Ingresos / Egresos) con orden fijo: por categoría,
-  luego esenciales primero (en egresos), luego por valor de mayor a menor.
+  luego esenciales primero (en egresos), luego por valor de mayor a menor. Cada
+  categoría lleva un subtotal y cada sección un resumen, expresados como **equivalente
+  mensual** (los anuales, etc. se llevan a mensual; los Únicos no se cuentan); en
+  egresos el resumen separa esencial de no esencial.
 - **Carga mensual** — elegís un mes y se precarga una grilla con todas las
   plantillas; ajustás valor y fecha, descartás lo que no aplique y confirmás todo
   en una sola operación atómica. Si el mes ya tiene movimientos, se bloquea.
@@ -126,3 +129,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Gestión de movimientos | [spec](docs/specs/2026-07-24-gestion-de-movimientos.md) | [plan](docs/plans/2026-07-24-gestion-de-movimientos.md) |
 | Ingresos por categoría | [spec](docs/specs/2026-07-25-ingresos-por-categoria.md) | [plan](docs/plans/2026-07-25-ingresos-por-categoria.md) |
 | Plantillas agrupadas y ordenadas | [spec](docs/specs/2026-07-26-plantillas-agrupadas-y-ordenadas.md) | [plan](docs/plans/2026-07-26-plantillas-agrupadas-y-ordenadas.md) |
+| Totales en plantillas | [spec](docs/specs/2026-07-26-totales-en-plantillas.md) | [plan](docs/plans/2026-07-26-totales-en-plantillas.md) |
