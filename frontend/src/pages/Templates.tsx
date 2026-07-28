@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   ApiError,
   deleteTemplate,
@@ -10,6 +10,7 @@ import {
 import { formatCurrency } from "../lib/format";
 import { categoryColor } from "../lib/colors";
 import { categoryRank, groupByType } from "../lib/templateSort";
+import { groupWithSubtotals, sectionSummary } from "../lib/templateTotals";
 import {
   categoryNames,
   es,
@@ -102,66 +103,122 @@ export function Templates() {
     [templates, categories],
   );
 
-  function renderSection(title: string, rows: Template[], emptyText: string) {
+  function renderTemplateRow(tpl: Template) {
+    return (
+      <tr key={tpl.id}>
+        <td>
+          <span className={`pill pill-${tpl.transaction_type.toLowerCase()}`}>
+            {transactionTypeNames[tpl.transaction_type]}
+          </span>
+        </td>
+        <td>
+          <span
+            className="cat-dot"
+            style={{ backgroundColor: categoryColor(tpl.category_code) }}
+          />
+          {categoryNames[tpl.category_code] ?? tpl.category_code}
+        </td>
+        <td>{tpl.name}</td>
+        <td>{essentialLabel(tpl)}</td>
+        <td className="num">
+          {formatCurrency(Math.round(Number(tpl.default_amount)))}
+        </td>
+        <td>{frequencyNames[tpl.frequency] ?? tpl.frequency}</td>
+        <td className="row-actions">
+          <button type="button" onClick={() => openEdit(tpl)}>
+            {t.edit}
+          </button>
+          <button
+            type="button"
+            className="discard"
+            onClick={() => {
+              setDeleteError(null);
+              setDeleting(tpl);
+            }}
+          >
+            {t.delete}
+          </button>
+        </td>
+      </tr>
+    );
+  }
+
+  function renderSection(
+    title: string,
+    rows: Template[],
+    emptyText: string,
+    kind: "income" | "expense",
+  ) {
+    if (rows.length === 0) {
+      return (
+        <section className="template-section">
+          <h2>{title}</h2>
+          <div className="banner banner-warning">{emptyText}</div>
+        </section>
+      );
+    }
+
+    const groups = groupWithSubtotals(rows);
+    const summary = sectionSummary(rows);
+    const money = (n: number) => formatCurrency(Math.round(n));
+
     return (
       <section className="template-section">
         <h2>{title}</h2>
-        {rows.length === 0 ? (
-          <div className="banner banner-warning">{emptyText}</div>
-        ) : (
-          <table className="grid">
-            <thead>
-              <tr>
-                <th>{t.colType}</th>
-                <th>{t.colCategory}</th>
-                <th>{t.colName}</th>
-                <th>{t.colEssential}</th>
-                <th className="num">{t.colAmount}</th>
-                <th>{t.colFrequency}</th>
-                <th>{t.colActions}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((tpl) => (
-                <tr key={tpl.id}>
-                  <td>
-                    <span className={`pill pill-${tpl.transaction_type.toLowerCase()}`}>
-                      {transactionTypeNames[tpl.transaction_type]}
-                    </span>
+
+        <div className="section-summary">
+          {kind === "expense" && (
+            <>
+              <span>
+                {t.summaryEssential}: <strong>{money(summary.essentialMonthly)}</strong>
+                {t.perMonth}
+              </span>
+              <span>
+                {t.summaryNonEssential}:{" "}
+                <strong>{money(summary.nonEssentialMonthly)}</strong>
+                {t.perMonth}
+              </span>
+            </>
+          )}
+          <span>
+            {t.summaryTotal}: <strong>{money(summary.totalMonthly)}</strong>
+            {t.perMonth}
+          </span>
+        </div>
+        <p className="summary-note">{t.monthlyEquivNote}</p>
+
+        <table className="grid">
+          <thead>
+            <tr>
+              <th>{t.colType}</th>
+              <th>{t.colCategory}</th>
+              <th>{t.colName}</th>
+              <th>{t.colEssential}</th>
+              <th className="num">{t.colAmount}</th>
+              <th>{t.colFrequency}</th>
+              <th>{t.colActions}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groups.map((group) => (
+              <Fragment key={group.categoryCode}>
+                {group.templates.map(renderTemplateRow)}
+                <tr className="subtotal-row" key={`subtotal-${group.categoryCode}`}>
+                  <td />
+                  <td colSpan={3}>
+                    {t.subtotalLabel}{" "}
+                    {categoryNames[group.categoryCode] ?? group.categoryCode}
                   </td>
-                  <td>
-                    <span
-                      className="cat-dot"
-                      style={{ backgroundColor: categoryColor(tpl.category_code) }}
-                    />
-                    {categoryNames[tpl.category_code] ?? tpl.category_code}
-                  </td>
-                  <td>{tpl.name}</td>
-                  <td>{essentialLabel(tpl)}</td>
                   <td className="num">
-                    {formatCurrency(Math.round(Number(tpl.default_amount)))}
+                    {money(group.subtotalMonthly)}
+                    {t.perMonth}
                   </td>
-                  <td>{frequencyNames[tpl.frequency] ?? tpl.frequency}</td>
-                  <td className="row-actions">
-                    <button type="button" onClick={() => openEdit(tpl)}>
-                      {t.edit}
-                    </button>
-                    <button
-                      type="button"
-                      className="discard"
-                      onClick={() => {
-                        setDeleteError(null);
-                        setDeleting(tpl);
-                      }}
-                    >
-                      {t.delete}
-                    </button>
-                  </td>
+                  <td colSpan={2} />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
       </section>
     );
   }
@@ -182,8 +239,8 @@ export function Templates() {
 
       {!loading && !loadError && (
         <>
-          {renderSection(t.sectionIncome, income, t.emptyIncome)}
-          {renderSection(t.sectionExpense, expense, t.emptyExpense)}
+          {renderSection(t.sectionIncome, income, t.emptyIncome, "income")}
+          {renderSection(t.sectionExpense, expense, t.emptyExpense, "expense")}
         </>
       )}
 

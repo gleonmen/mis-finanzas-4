@@ -153,6 +153,15 @@ export const es = {
     sectionExpense: "Egresos",
     emptyIncome: "No tenés plantillas de ingreso todavía.",
     emptyExpense: "No tenés plantillas de gasto todavía.",
+    // totals (monthly equivalent)
+    subtotalLabel: "Subtotal",
+    perMonth: "/mes",
+    summaryEssential: "Esencial",
+    summaryNonEssential: "No esencial",
+    summaryTotal: "Total",
+    monthlyEquivNote:
+      "Equivalente mensual: los valores anuales, trimestrales, etc. se llevan a " +
+      "mensual; las plantillas de periodicidad Único no se cuentan.",
     colType: "Tipo",
     // (emptyState removed: each section now has its own empty state)
     colCategory: "Categoría",

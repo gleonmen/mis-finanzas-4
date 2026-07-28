@@ -265,6 +265,42 @@ button:disabled {
   margin: 0 0 0.6rem;
 }
 
+/* Section summary strip (monthly-equivalent totals) */
+.section-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.section-summary strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.35rem 0 0.75rem;
+}
+
+/* Category subtotal row inside a section table */
+.subtotal-row td {
+  background: #fafbfc;
+  font-weight: 600;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+}
+
+.subtotal-row .num {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Row actions */
 .row-actions {
   display: flex;
