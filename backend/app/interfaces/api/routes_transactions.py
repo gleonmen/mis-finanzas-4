@@ -13,11 +13,13 @@ from app.application.errors import (
 from app.domain.entities import TransactionData
 from app.interfaces.api.deps import (
     CreateTransactionDep,
+    DeleteMonthTransactionsDep,
     DeleteTransactionDep,
     ListMonthTransactionsDep,
     UpdateTransactionDep,
 )
 from app.interfaces.api.schemas import (
+    MonthDeleteOut,
     MonthTransactionsOut,
     TotalsOut,
     TransactionCreatedOut,
@@ -39,6 +41,7 @@ def _to_data(payload: TransactionWriteIn) -> TransactionData:
         is_essential=payload.is_essential,
         amount=payload.amount,
         occurred_on=payload.occurred_on,
+        payment_status=payload.payment_status,
     )
 
 
@@ -102,3 +105,14 @@ def delete_transaction(
     except TransactionNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return Response(status_code=204)
+
+
+@router.delete("/{year}/{month}", response_model=MonthDeleteOut)
+def delete_month(
+    year: YearPath, month: MonthPath, use_case: DeleteMonthTransactionsDep
+) -> MonthDeleteOut:
+    try:
+        deleted = use_case.execute(year=year, month=month)
+    except InvalidPeriodError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return MonthDeleteOut(deleted=deleted)

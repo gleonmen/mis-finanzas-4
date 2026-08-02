@@ -13,6 +13,7 @@ from app.interfaces.api.schemas import (
     EssentialSplitOut,
     MonthPointOut,
     MonthlyReportOut,
+    PaymentSplitOut,
     TotalsOut,
 )
 
@@ -37,6 +38,10 @@ def _essential(e) -> EssentialSplitOut:
     return EssentialSplitOut(essential=e.essential, non_essential=e.non_essential)
 
 
+def _payment(p) -> PaymentSplitOut:
+    return PaymentSplitOut(paid=p.paid, pending=p.pending)
+
+
 @router.get("/monthly/{year}/{month}", response_model=MonthlyReportOut)
 def monthly_report(
     year: YearPath, month: MonthPath, use_case: MonthlyReportDep
@@ -53,6 +58,8 @@ def monthly_report(
         by_category_chart=_categories(result.by_category_chart),
         income_by_category=_categories(result.income_by_category),
         essential=_essential(result.essential),
+        expense_payment=_payment(result.expense_payment),
+        income_payment=_payment(result.income_payment),
     )
 
 

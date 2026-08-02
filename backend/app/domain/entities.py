@@ -21,6 +21,14 @@ class Frequency(str, Enum):
     ONE_TIME = "ONE_TIME"
 
 
+class PaymentStatus(str, Enum):
+    """Per-movement state (mutable, not a template snapshot). For income it reads
+    as received/pending-to-collect; for expense as paid/pending-to-pay."""
+
+    PAID = "PAID"
+    PENDING = "PENDING"
+
+
 @dataclass(frozen=True)
 class Category:
     """A fixed catalog category (a "group"). Not user-editable."""
@@ -57,6 +65,7 @@ class TransactionData:
     is_essential: bool | None
     amount: Decimal
     occurred_on: date
+    payment_status: PaymentStatus = PaymentStatus.PENDING
 
 
 @dataclass(frozen=True)
@@ -82,6 +91,14 @@ class EssentialSplit:
 
     essential: Decimal
     non_essential: Decimal
+
+
+@dataclass(frozen=True)
+class PaymentSplit:
+    """Amounts split by payment status, for one transaction type in a period."""
+
+    paid: Decimal
+    pending: Decimal
 
 
 @dataclass(frozen=True)
@@ -119,5 +136,7 @@ class Transaction:
     frequency: Frequency
     amount: Decimal
     occurred_on: date
+    # Mutable per-movement state; NOT part of the template snapshot.
+    payment_status: PaymentStatus = PaymentStatus.PENDING
     template_id: int | None = None
     id: int | None = None

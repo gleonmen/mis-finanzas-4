@@ -8,11 +8,15 @@ from app.application.errors import (
     TransactionValidationError,
 )
 from app.application.use_cases.create_transaction import CreateTransaction
+from app.application.use_cases.delete_month_transactions import (
+    DeleteMonthTransactions,
+)
 from app.application.use_cases.delete_transaction import DeleteTransaction
 from app.application.use_cases.update_transaction import UpdateTransaction
 from app.domain.entities import (
     Category,
     Frequency,
+    PaymentStatus,
     Transaction,
     TransactionData,
     TransactionType,
@@ -75,6 +79,7 @@ class FakeTransactionRepo:
             frequency=frequency,
             amount=data.amount,
             occurred_on=data.occurred_on,
+            payment_status=data.payment_status,
             template_id=template_id,
         )
         self.items[tid] = tx
@@ -94,6 +99,7 @@ class FakeTransactionRepo:
             frequency=existing.frequency,
             amount=data.amount,
             occurred_on=data.occurred_on,
+            payment_status=data.payment_status,
             template_id=existing.template_id,
         )
         self.items[transaction_id] = updated
@@ -101,6 +107,16 @@ class FakeTransactionRepo:
 
     def delete(self, transaction_id):
         return self.items.pop(transaction_id, None) is not None
+
+    def delete_in_month(self, year, month):
+        ids = [
+            tid
+            for tid, t in self.items.items()
+            if t.occurred_on.year == year and t.occurred_on.month == month
+        ]
+        for tid in ids:
+            del self.items[tid]
+        return len(ids)
 
 
 def expense_data(**kw):
@@ -281,3 +297,43 @@ def test_delete_missing_rejected():
     repo = FakeTransactionRepo()
     with pytest.raises(TransactionNotFoundError):
         DeleteTransaction(repo).execute(1)
+
+
+# --- payment status --------------------------------------------------------
+
+def test_create_defaults_to_pending():
+    _, uc = make()
+    tx = uc.execute(expense_data()).transaction
+    assert tx.payment_status == PaymentStatus.PENDING
+
+
+def test_create_can_be_paid():
+    _, uc = make()
+    tx = uc.execute(expense_data(payment_status=PaymentStatus.PAID)).transaction
+    assert tx.payment_status == PaymentStatus.PAID
+
+
+def test_update_can_change_payment_status():
+    repo, create = make()
+    create.execute(expense_data())  # pending
+    uc = UpdateTransaction(repo, FakeCategoryRepo())
+    updated = uc.execute(1, expense_data(payment_status=PaymentStatus.PAID))
+    assert updated.payment_status == PaymentStatus.PAID
+
+
+# --- bulk delete of a month ------------------------------------------------
+
+def test_delete_month_returns_count_and_empties_the_month():
+    repo, create = make()
+    create.execute(expense_data(occurred_on=date(2026, 7, 3)))
+    create.execute(expense_data(occurred_on=date(2026, 7, 20)))
+    create.execute(expense_data(occurred_on=date(2026, 8, 1)))  # other month
+    deleted = DeleteMonthTransactions(repo).execute(2026, 7)
+    assert deleted == 2
+    assert repo.count_in_month(2026, 7) == 0
+    assert repo.count_in_month(2026, 8) == 1  # untouched
+
+
+def test_delete_month_empty_returns_zero():
+    repo = FakeTransactionRepo()
+    assert DeleteMonthTransactions(repo).execute(2026, 7) == 0

@@ -11,7 +11,7 @@ from app.application.errors import (
     InvalidDraftLineError,
     MonthAlreadyLoadedError,
 )
-from app.domain.entities import Transaction
+from app.domain.entities import PaymentStatus, Transaction
 from app.domain.repositories import TemplateRepository, TransactionRepository
 
 
@@ -67,6 +67,7 @@ class LoadMonthFromTemplates:
                 )
 
             # Freeze a snapshot of the template fields into the transaction.
+            # Loaded movements are born pending (you load what you expect to pay).
             transactions.append(
                 Transaction(
                     transaction_type=template.transaction_type,
@@ -76,6 +77,7 @@ class LoadMonthFromTemplates:
                     frequency=template.frequency,
                     amount=line.amount,
                     occurred_on=line.occurred_on,
+                    payment_status=PaymentStatus.PENDING,
                     template_id=template.id,
                 )
             )

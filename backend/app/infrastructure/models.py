@@ -13,7 +13,7 @@ from sqlalchemy import BigInteger, Boolean, Date, ForeignKey, Numeric, String
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.domain.entities import Frequency, TransactionType
+from app.domain.entities import Frequency, PaymentStatus, TransactionType
 from app.infrastructure.db import Base
 
 # Map onto the existing native Postgres enum types (created by the migrations, so
@@ -28,6 +28,12 @@ _TRANSACTION_TYPE = SAEnum(
 _FREQUENCY = SAEnum(
     Frequency,
     name="frequency",
+    create_type=False,
+    values_callable=lambda enum: [m.value for m in enum],
+)
+_PAYMENT_STATUS = SAEnum(
+    PaymentStatus,
+    name="payment_status",
     create_type=False,
     values_callable=lambda enum: [m.value for m in enum],
 )
@@ -68,6 +74,7 @@ class TransactionModel(Base):
     # Movement data.
     amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
     occurred_on: Mapped[date] = mapped_column(Date)
+    payment_status: Mapped[PaymentStatus] = mapped_column(_PAYMENT_STATUS)
     template_id: Mapped[int | None] = mapped_column(
         ForeignKey("templates.id", ondelete="SET NULL"), nullable=True
     )

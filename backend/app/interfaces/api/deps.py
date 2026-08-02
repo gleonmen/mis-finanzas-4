@@ -14,6 +14,9 @@ from sqlalchemy.orm import Session
 from app.application.use_cases.annual_report import AnnualReport
 from app.application.use_cases.create_template import CreateTemplate
 from app.application.use_cases.create_transaction import CreateTransaction
+from app.application.use_cases.delete_month_transactions import (
+    DeleteMonthTransactions,
+)
 from app.application.use_cases.delete_template import DeleteTemplate
 from app.application.use_cases.delete_transaction import DeleteTransaction
 from app.application.use_cases.list_month_transactions import ListMonthTransactions
@@ -110,6 +113,12 @@ def get_delete_transaction(session: SessionDep) -> DeleteTransaction:
     )
 
 
+def get_delete_month_transactions(session: SessionDep) -> DeleteMonthTransactions:
+    return DeleteMonthTransactions(
+        transaction_repo=SqlAlchemyTransactionRepository(session)
+    )
+
+
 def get_prepare_monthly_load(session: SessionDep) -> PrepareMonthlyLoad:
     return PrepareMonthlyLoad(
         template_repo=SqlAlchemyTemplateRepository(session),
@@ -137,6 +146,9 @@ ListMonthTransactionsDep = Annotated[
 CreateTransactionDep = Annotated[CreateTransaction, Depends(get_create_transaction)]
 UpdateTransactionDep = Annotated[UpdateTransaction, Depends(get_update_transaction)]
 DeleteTransactionDep = Annotated[DeleteTransaction, Depends(get_delete_transaction)]
+DeleteMonthTransactionsDep = Annotated[
+    DeleteMonthTransactions, Depends(get_delete_month_transactions)
+]
 PrepareMonthlyLoadDep = Annotated[PrepareMonthlyLoad, Depends(get_prepare_monthly_load)]
 LoadMonthDep = Annotated[
     LoadMonthFromTemplates, Depends(get_load_month_from_templates)

@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 
+from sqlalchemy import delete as sa_delete
 from sqlalchemy import extract, func, select
 from sqlalchemy.orm import Session
 
@@ -13,6 +14,8 @@ from app.domain.entities import (
     EssentialSplit,
     Frequency,
     MonthPoint,
+    PaymentSplit,
+    PaymentStatus,
     PeriodTotals,
     Template,
     TemplateData,
@@ -232,6 +235,23 @@ class SqlAlchemyReportRepository(ReportRepository):
             )
         return points
 
+    def payment_split(
+        self, start: date, end: date, tx_type: TransactionType
+    ) -> PaymentSplit:
+        paid_sum = func.sum(TransactionModel.amount).filter(
+            TransactionModel.payment_status == PaymentStatus.PAID
+        )
+        pending_sum = func.sum(TransactionModel.amount).filter(
+            TransactionModel.payment_status == PaymentStatus.PENDING
+        )
+        row = self._session.execute(
+            select(paid_sum, pending_sum)
+            .select_from(TransactionModel)
+            .where(self._in_range(start, end))
+            .where(TransactionModel.transaction_type == tx_type)
+        ).one()
+        return PaymentSplit(paid=_dec(row[0]), pending=_dec(row[1]))
+
 
 class SqlAlchemyTransactionRepository(TransactionRepository):
     def __init__(self, session: Session) -> None:
@@ -258,6 +278,7 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
                 frequency=t.frequency,
                 amount=t.amount,
                 occurred_on=t.occurred_on,
+                payment_status=t.payment_status,
                 template_id=t.template_id,
             )
             for t in transactions
@@ -278,6 +299,7 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
             frequency=Frequency(model.frequency),
             amount=model.amount,
             occurred_on=model.occurred_on,
+            payment_status=PaymentStatus(model.payment_status),
             template_id=model.template_id,
         )
 
@@ -315,6 +337,7 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
             frequency=frequency,
             amount=data.amount,
             occurred_on=data.occurred_on,
+            payment_status=data.payment_status,
             template_id=template_id,
         )
         self._session.add(model)
@@ -334,6 +357,7 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
         model.is_essential = data.is_essential
         model.amount = data.amount
         model.occurred_on = data.occurred_on
+        model.payment_status = data.payment_status
         self._session.flush()
         return self._to_entity(model)
 
@@ -344,3 +368,14 @@ class SqlAlchemyTransactionRepository(TransactionRepository):
         self._session.delete(model)
         self._session.flush()
         return True
+
+    def delete_in_month(self, year: int, month: int) -> int:
+        start = date(year, month, 1)
+        ny, nm = _next_month(year, month)
+        result = self._session.execute(
+            sa_delete(TransactionModel)
+            .where(TransactionModel.occurred_on >= start)
+            .where(TransactionModel.occurred_on < date(ny, nm, 1))
+        )
+        # Atomic within the request transaction; deps commits on success.
+        return result.rowcount or 0

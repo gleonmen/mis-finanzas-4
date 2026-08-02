@@ -58,5 +58,6 @@ def validate_and_normalize(
         is_essential=is_essential,
         amount=data.amount,
         occurred_on=data.occurred_on,
+        payment_status=data.payment_status,
     )
     return normalized, category.code

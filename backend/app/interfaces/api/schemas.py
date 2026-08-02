@@ -6,7 +6,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, Field
 
-from app.domain.entities import Frequency, TransactionType
+from app.domain.entities import Frequency, PaymentStatus, TransactionType
 
 
 class TemplateOut(BaseModel):
@@ -70,6 +70,7 @@ class TransactionOut(BaseModel):
     frequency: Frequency
     amount: Decimal
     occurred_on: date
+    payment_status: PaymentStatus
     template_id: int | None
 
 
@@ -78,6 +79,7 @@ class TransactionWriteIn(BaseModel):
 
     On update `transaction_type` is ignored: the type is fixed at creation.
     `occurred_on` is free — it need not fall in any particular month.
+    payment_status defaults to PENDING (a new ad-hoc movement is born pending).
     """
 
     transaction_type: TransactionType
@@ -86,6 +88,11 @@ class TransactionWriteIn(BaseModel):
     is_essential: bool | None = None
     amount: Decimal = Field(gt=0)
     occurred_on: date
+    payment_status: PaymentStatus = PaymentStatus.PENDING
+
+
+class MonthDeleteOut(BaseModel):
+    deleted: int
 
 
 class TransactionCreatedOut(BaseModel):
@@ -102,6 +109,11 @@ class TotalsOut(BaseModel):
     income: Decimal
     expense: Decimal
     net: Decimal  # may be negative
+
+
+class PaymentSplitOut(BaseModel):
+    paid: Decimal
+    pending: Decimal
 
 
 class CategoryAmountOut(BaseModel):
@@ -129,6 +141,8 @@ class MonthlyReportOut(BaseModel):
     by_category_chart: list[CategoryAmountOut]  # top N + OTHER
     income_by_category: list[CategoryAmountOut]  # income breakdown (no OTHER)
     essential: EssentialSplitOut
+    expense_payment: PaymentSplitOut  # paid vs pending (expenses)
+    income_payment: PaymentSplitOut  # received vs pending (income)
 
 
 class AnnualReportOut(BaseModel):
