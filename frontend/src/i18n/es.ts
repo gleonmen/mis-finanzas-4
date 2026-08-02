@@ -26,6 +26,13 @@ export const transactionTypeNames: Record<string, string> = {
   EXPENSE: "Gasto",
 };
 
+// Payment-status labels depend on the movement type: expenses read as
+// paid/pending-to-pay, income as received/pending-to-collect.
+export const paymentStatusNames: Record<string, Record<string, string>> = {
+  EXPENSE: { PAID: "Pagado", PENDING: "Pendiente de pago" },
+  INCOME: { PAID: "Recibido", PENDING: "Pendiente de cobro" },
+};
+
 export const frequencyNames: Record<string, string> = {
   MONTHLY: "Mensual",
   BIMONTHLY: "Bimestral",
@@ -61,11 +68,21 @@ export const es = {
     colEssential: "Esencial",
     colAmount: "Valor",
     colDate: "Fecha",
+    colStatus: "Estado",
     colActions: "",
     essentialYes: "Sí",
     essentialNo: "No",
     essentialNA: "—",
+    // bulk delete
+    deleteAll: "Borrar todos",
+    confirmDeleteAllTitle: "Borrar todos los movimientos del mes",
+    confirmDeleteAllBody: (count: number, monthYear: string) =>
+      `¿Seguro que querés borrar los ${count} movimiento(s) de ${monthYear}? ` +
+      `Esta acción no se puede deshacer. El mes quedará libre para volver a cargarlo.`,
+    deletedAll: (count: number) => `Se borraron ${count} movimiento(s).`,
+    deleteAllError: "No se pudieron borrar los movimientos. Intentá de nuevo.",
     // form
+    fieldStatus: "Estado",
     formNewTitle: "Nuevo movimiento",
     formEditTitle: "Editar movimiento",
     fieldType: "Tipo",
@@ -127,6 +144,14 @@ export const es = {
     essentialTitle: "Cuánto de tu gasto es esencial",
     essential: "Esencial",
     nonEssential: "No esencial",
+    // payment meters (monthly)
+    expensePaymentTitle: "Gastos: pagado vs pendiente",
+    incomePaymentTitle: "Ingresos: recibido vs pendiente",
+    paid: "Pagado",
+    pendingToPay: "Pendiente de pago",
+    received: "Recibido",
+    pendingToCollect: "Pendiente de cobro",
+    noIncomeMeter: "No hay ingresos en este período.",
     trendTitle: "Evolución mes a mes",
     netByMonthTitle: "Neto por mes",
     // tables

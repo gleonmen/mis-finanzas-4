@@ -4,6 +4,8 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 export type TransactionType = "INCOME" | "EXPENSE";
 
+export type PaymentStatus = "PAID" | "PENDING";
+
 export interface Template {
   id: number;
   name: string;
@@ -57,6 +59,7 @@ export interface Transaction {
   frequency: string;
   amount: string;
   occurred_on: string; // YYYY-MM-DD
+  payment_status: PaymentStatus;
   template_id: number | null;
 }
 
@@ -67,6 +70,7 @@ export interface TransactionWrite {
   is_essential: boolean | null;
   amount: number;
   occurred_on: string;
+  payment_status: PaymentStatus;
 }
 
 export interface MonthTransactions {
@@ -108,6 +112,11 @@ export interface MonthPoint {
   net: string;
 }
 
+export interface PaymentSplit {
+  paid: string;
+  pending: string;
+}
+
 export interface MonthlyReport {
   year: number;
   month: number;
@@ -116,6 +125,8 @@ export interface MonthlyReport {
   by_category_chart: CategoryAmount[];
   income_by_category: CategoryAmount[];
   essential: EssentialSplit;
+  expense_payment: PaymentSplit;
+  income_payment: PaymentSplit;
 }
 
 export interface AnnualReport {
@@ -223,6 +234,17 @@ export async function updateTransaction(
 export async function deleteTransaction(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/transactions/${id}`, { method: "DELETE" });
   if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+}
+
+export async function deleteMonthTransactions(
+  year: number,
+  month: number,
+): Promise<{ deleted: number }> {
+  const res = await fetch(`${BASE_URL}/transactions/${year}/${month}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res));
+  return res.json();
 }
 
 export async function getMonthlyReport(

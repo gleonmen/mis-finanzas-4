@@ -15,12 +15,16 @@ export function EssentialMeter({
   split,
   title = es.reports.essentialTitle,
   emptyText = es.reports.noExpense,
+  leftLabel = es.reports.essential,
+  rightLabel = es.reports.nonEssential,
 }: {
   split: EssentialSplit;
   title?: string;
   emptyText?: string;
+  /** Labels for the two parts (left = split.essential, right = split.non_essential). */
+  leftLabel?: string;
+  rightLabel?: string;
 }) {
-  const t = es.reports;
   const essential = Number(split.essential);
   const nonEssential = Number(split.non_essential);
   const total = essential + nonEssential;
@@ -40,12 +44,12 @@ export function EssentialMeter({
     <section className="card">
       <h2>{title}</h2>
       <p className="meter-headline">
-        <strong>{pct}%</strong> {t.essential.toLowerCase()}
+        <strong>{pct}%</strong> {leftLabel.toLowerCase()}
       </p>
       <div
         className="meter"
         role="img"
-        aria-label={`${pct}% ${t.essential}, ${100 - pct}% ${t.nonEssential}`}
+        aria-label={`${pct}% ${leftLabel}, ${100 - pct}% ${rightLabel}`}
       >
         <span
           className="meter-fill"
@@ -59,14 +63,14 @@ export function EssentialMeter({
       <ul className="meter-legend">
         <li>
           <span className="cat-dot" style={{ backgroundColor: ESSENTIAL_COLOR }} />
-          {t.essential}: <strong>{formatCurrency(essential)}</strong>
+          {leftLabel}: <strong>{formatCurrency(essential)}</strong>
         </li>
         <li>
           <span
             className="cat-dot"
             style={{ backgroundColor: NON_ESSENTIAL_COLOR }}
           />
-          {t.nonEssential}: <strong>{formatCurrency(nonEssential)}</strong>
+          {rightLabel}: <strong>{formatCurrency(nonEssential)}</strong>
         </li>
       </ul>
     </section>

@@ -4,12 +4,13 @@ import {
   createTransaction,
   updateTransaction,
   type Category,
+  type PaymentStatus,
   type Transaction,
   type TransactionCreated,
   type TransactionType,
 } from "../lib/api";
 import { formatThousands, parseAmount } from "../lib/format";
-import { categoryNames, es } from "../i18n/es";
+import { categoryNames, es, paymentStatusNames } from "../i18n/es";
 import { Modal } from "./Modal";
 
 interface TransactionFormModalProps {
@@ -55,6 +56,9 @@ export function TransactionFormModal({
   const [occurredOn, setOccurredOn] = useState<string>(
     transaction?.occurred_on ?? defaultDate,
   );
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(
+    transaction?.payment_status ?? "PENDING",
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,6 +90,7 @@ export function TransactionFormModal({
       is_essential: type === "EXPENSE" ? isEssential : null,
       amount,
       occurred_on: occurredOn,
+      payment_status: paymentStatus,
     };
     try {
       if (isEdit) {
@@ -196,6 +201,17 @@ export function TransactionFormModal({
             onChange={(e) => setOccurredOn(e.target.value)}
           />
           {!dateValid && <small className="field-error">{t.errDate}</small>}
+        </label>
+
+        <label className="form-field">
+          <span>{t.fieldStatus}</span>
+          <select
+            value={paymentStatus}
+            onChange={(e) => setPaymentStatus(e.target.value as PaymentStatus)}
+          >
+            <option value="PENDING">{paymentStatusNames[type].PENDING}</option>
+            <option value="PAID">{paymentStatusNames[type].PAID}</option>
+          </select>
         </label>
 
         {error && <div className="banner banner-error">{error}</div>}

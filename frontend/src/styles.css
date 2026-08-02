@@ -158,6 +158,19 @@ button:disabled {
   background: var(--expense);
 }
 
+/* Payment-status pills */
+.pill-pay-paid {
+  background: #e9f6ef;
+  color: #006300;
+  border: 1px solid #9ad2b4;
+}
+
+.pill-pay-pending {
+  background: #fff4e5;
+  color: #8a5a00;
+  border: 1px solid #f0c98a;
+}
+
 .cat-dot {
   display: inline-block;
   width: 10px;

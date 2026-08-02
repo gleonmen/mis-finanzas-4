@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ApiError,
+  deleteMonthTransactions,
   deleteTransaction,
   getCategories,
   getMonthTransactions,
@@ -12,7 +13,12 @@ import {
 import { formatCurrency, formatMonthYear } from "../lib/format";
 import { currentYearMonth, monthBounds, parseMonthInput, toMonthInput } from "../lib/month";
 import { categoryColor } from "../lib/colors";
-import { categoryNames, es, transactionTypeNames } from "../i18n/es";
+import {
+  categoryNames,
+  es,
+  paymentStatusNames,
+  transactionTypeNames,
+} from "../i18n/es";
 import { StatTiles } from "../components/StatTiles";
 import { TransactionFormModal } from "../components/TransactionFormModal";
 import { Modal } from "../components/Modal";
@@ -40,6 +46,9 @@ export function Movements() {
 
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
+  const [deleteAllBusy, setDeleteAllBusy] = useState(false);
 
   const ym = parseMonthInput(monthInput) ?? initial;
 
@@ -131,6 +140,29 @@ export function Movements() {
     }
   }
 
+  async function handleDeleteAll() {
+    setDeleteAllBusy(true);
+    try {
+      const { deleted } = await deleteMonthTransactions(ym.year, ym.month);
+      setConfirmDeleteAll(false);
+      await loadMonth();
+      setFeedback([{ type: "success", text: t.deletedAll(deleted) }]);
+    } catch (err) {
+      setFeedback([
+        {
+          type: "error",
+          text:
+            err instanceof ApiError && err.message
+              ? err.message
+              : t.deleteAllError,
+        },
+      ]);
+      setConfirmDeleteAll(false);
+    } finally {
+      setDeleteAllBusy(false);
+    }
+  }
+
   function essentialLabel(tx: Transaction): string {
     if (tx.transaction_type !== "EXPENSE") return t.essentialNA;
     return tx.is_essential ? t.essentialYes : t.essentialNo;
@@ -155,6 +187,15 @@ export function Movements() {
         <button type="button" className="confirm" onClick={openNew}>
           {t.newButton}
         </button>
+        {items.length > 0 && (
+          <button
+            type="button"
+            className="danger"
+            onClick={() => setConfirmDeleteAll(true)}
+          >
+            {t.deleteAll}
+          </button>
+        )}
       </div>
 
       {feedback.map((f, i) => (
@@ -181,6 +222,7 @@ export function Movements() {
                   <th>{t.colEssential}</th>
                   <th className="num">{t.colAmount}</th>
                   <th>{t.colDate}</th>
+                  <th>{t.colStatus}</th>
                   <th>{t.colActions}</th>
                 </tr>
               </thead>
@@ -207,6 +249,13 @@ export function Movements() {
                       {formatCurrency(Math.round(Number(tx.amount)))}
                     </td>
                     <td>{tx.occurred_on}</td>
+                    <td>
+                      <span
+                        className={`pill pill-pay-${tx.payment_status.toLowerCase()}`}
+                      >
+                        {paymentStatusNames[tx.transaction_type][tx.payment_status]}
+                      </span>
+                    </td>
                     <td className="row-actions">
                       <button type="button" onClick={() => openEdit(tx)}>
                         {t.edit}
@@ -256,6 +305,38 @@ export function Movements() {
               disabled={deleteBusy}
             >
               {t.confirmDelete}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {confirmDeleteAll && (
+        <Modal
+          title={t.confirmDeleteAllTitle}
+          onClose={() => setConfirmDeleteAll(false)}
+        >
+          <p>
+            {t.confirmDeleteAllBody(
+              items.length,
+              formatMonthYear(ym.year, ym.month),
+            )}
+          </p>
+          <div className="form-actions">
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => setConfirmDeleteAll(false)}
+              disabled={deleteAllBusy}
+            >
+              {t.cancel}
+            </button>
+            <button
+              type="button"
+              className="danger"
+              onClick={handleDeleteAll}
+              disabled={deleteAllBusy}
+            >
+              {t.deleteAll}
             </button>
           </div>
         </Modal>
