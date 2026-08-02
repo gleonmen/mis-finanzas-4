@@ -13,7 +13,9 @@ La app se organiza en cuatro pestañas:
   luego esenciales primero (en egresos), luego por valor de mayor a menor. Cada
   categoría lleva un subtotal y cada sección un resumen, expresados como **equivalente
   mensual** (los anuales, etc. se llevan a mensual; los Únicos no se cuentan); en
-  egresos el resumen separa esencial de no esencial.
+  egresos el resumen separa esencial de no esencial. Cada sección muestra además una
+  gráfica de barras (total por categoría) y, en egresos, un medidor esencial/no
+  esencial.
 - **Carga mensual** — elegís un mes y se precarga una grilla con todas las
   plantillas; ajustás valor y fecha, descartás lo que no aplique y confirmás todo
   en una sola operación atómica. Si el mes ya tiene movimientos, se bloquea.
@@ -136,3 +138,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Plantillas agrupadas y ordenadas | [spec](docs/specs/2026-07-26-plantillas-agrupadas-y-ordenadas.md) | [plan](docs/plans/2026-07-26-plantillas-agrupadas-y-ordenadas.md) |
 | Totales en plantillas | [spec](docs/specs/2026-07-26-totales-en-plantillas.md) | [plan](docs/plans/2026-07-26-totales-en-plantillas.md) |
 | Categoría Impuestos | [spec](docs/specs/2026-07-26-categoria-impuestos.md) | [plan](docs/plans/2026-07-26-categoria-impuestos.md) |
+| Gráficas en plantillas | [spec](docs/specs/2026-07-26-graficas-en-plantillas.md) | [plan](docs/plans/2026-07-26-graficas-en-plantillas.md) |
