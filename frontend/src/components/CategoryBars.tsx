@@ -29,12 +29,15 @@ export function CategoryBars({
   title = es.reports.byCategoryTitle,
   shareLabel = es.reports.tableShare,
   emptyText = es.reports.byCategoryEmpty,
+  showTable = true,
 }: {
   chartData: CategoryAmount[];
   fullData: CategoryAmount[];
   title?: string;
   shareLabel?: string;
   emptyText?: string;
+  /** The table twin. Off where a detail table already exists on the page. */
+  showTable?: boolean;
 }) {
   const t = es.reports;
 
@@ -110,6 +113,7 @@ export function CategoryBars({
       </div>
 
       {/* Table twin: the source of truth, and the relief for sub-3:1 slots. */}
+      {showTable && (
       <table className="grid report-table">
         <thead>
           <tr>
@@ -143,6 +147,7 @@ export function CategoryBars({
           </tr>
         </tbody>
       </table>
+      )}
     </section>
   );
 }

@@ -6,7 +6,7 @@
 // a planning view over template defaults — NOT a cash-basis report of real movements,
 // where amounts are never prorated.
 
-import type { Template } from "./api";
+import type { CategoryAmount, Template } from "./api";
 
 /** Months per period. ONE_TIME is intentionally absent: a one-off is excluded. */
 const MONTHLY_DIVISOR: Record<string, number> = {
@@ -52,6 +52,22 @@ export function groupWithSubtotals(rows: Template[]): CategoryGroup[] {
     group.subtotalMonthly += monthlyEquivalent(tpl);
   }
   return groups;
+}
+
+/**
+ * Monthly-equivalent total per category, as CategoryAmount[] sorted by amount
+ * descending — the shape the bar chart wants (it paints in the given order).
+ * Categories whose monthly total is 0 (only ONE_TIME templates) are dropped, so
+ * the chart shows no empty bar for them.
+ */
+export function categoryAmountsMonthly(rows: Template[]): CategoryAmount[] {
+  return groupWithSubtotals(rows)
+    .filter((g) => g.subtotalMonthly > 0)
+    .map((g) => ({
+      category_code: g.categoryCode,
+      amount: String(g.subtotalMonthly),
+    }))
+    .sort((a, b) => Number(b.amount) - Number(a.amount));
 }
 
 export interface SectionSummary {

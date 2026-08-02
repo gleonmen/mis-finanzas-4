@@ -163,6 +163,10 @@ export const es = {
     monthlyEquivNote:
       "Equivalente mensual: los valores anuales, trimestrales, etc. se llevan a " +
       "mensual; las plantillas de periodicidad Único no se cuentan.",
+    chartIncomeByCategory: "Ingreso por categoría (mensual)",
+    chartExpenseByCategory: "Gasto por categoría (mensual)",
+    chartEssentialTitle: "Esencial vs no esencial (mensual)",
+    chartEmpty: "Sin datos para graficar.",
     colType: "Tipo",
     // (emptyState removed: each section now has its own empty state)
     colCategory: "Categoría",

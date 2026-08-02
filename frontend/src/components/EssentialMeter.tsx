@@ -11,7 +11,15 @@ const NON_ESSENTIAL_COLOR = SLOTS_LIGHT[1]; // orange
  * anti-pattern). Both amounts and the percentage are labeled, so the value is
  * never gated behind color or a tooltip.
  */
-export function EssentialMeter({ split }: { split: EssentialSplit }) {
+export function EssentialMeter({
+  split,
+  title = es.reports.essentialTitle,
+  emptyText = es.reports.noExpense,
+}: {
+  split: EssentialSplit;
+  title?: string;
+  emptyText?: string;
+}) {
   const t = es.reports;
   const essential = Number(split.essential);
   const nonEssential = Number(split.non_essential);
@@ -20,8 +28,8 @@ export function EssentialMeter({ split }: { split: EssentialSplit }) {
   if (total <= 0) {
     return (
       <section className="card">
-        <h2>{t.essentialTitle}</h2>
-        <p className="muted">{t.noExpense}</p>
+        <h2>{title}</h2>
+        <p className="muted">{emptyText}</p>
       </section>
     );
   }
@@ -30,7 +38,7 @@ export function EssentialMeter({ split }: { split: EssentialSplit }) {
 
   return (
     <section className="card">
-      <h2>{t.essentialTitle}</h2>
+      <h2>{title}</h2>
       <p className="meter-headline">
         <strong>{pct}%</strong> {t.essential.toLowerCase()}
       </p>

@@ -10,7 +10,13 @@ import {
 import { formatCurrency } from "../lib/format";
 import { categoryColor } from "../lib/colors";
 import { categoryRank, groupByType } from "../lib/templateSort";
-import { groupWithSubtotals, sectionSummary } from "../lib/templateTotals";
+import {
+  categoryAmountsMonthly,
+  groupWithSubtotals,
+  sectionSummary,
+} from "../lib/templateTotals";
+import { CategoryBars } from "../components/CategoryBars";
+import { EssentialMeter } from "../components/EssentialMeter";
 import {
   categoryNames,
   es,
@@ -162,6 +168,12 @@ export function Templates() {
     const summary = sectionSummary(rows);
     const money = (n: number) => formatCurrency(Math.round(n));
 
+    // Chart data: monthly-equivalent per category, sorted desc. Bar only — the
+    // detail table with subtotals already lives below in this same section.
+    const chartData = categoryAmountsMonthly(rows);
+    const chartTitle =
+      kind === "income" ? t.chartIncomeByCategory : t.chartExpenseByCategory;
+
     return (
       <section className="template-section">
         <h2>{title}</h2>
@@ -186,6 +198,23 @@ export function Templates() {
           </span>
         </div>
         <p className="summary-note">{t.monthlyEquivNote}</p>
+
+        <CategoryBars
+          chartData={chartData}
+          fullData={chartData}
+          title={chartTitle}
+          emptyText={t.chartEmpty}
+          showTable={false}
+        />
+        {kind === "expense" && (
+          <EssentialMeter
+            split={{
+              essential: String(summary.essentialMonthly),
+              non_essential: String(summary.nonEssentialMonthly),
+            }}
+            title={t.chartEssentialTitle}
+          />
+        )}
 
         <table className="grid">
           <thead>
