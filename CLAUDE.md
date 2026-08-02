@@ -77,11 +77,14 @@ o exportar) — todo eso quedó explícitamente fuera del alcance de los reporte
 - **Reportes por caja**: un monto cae completo en su mes; los anuales NO se
   prorratean. `frequency` es solo metadato, no afecta cálculos.
 - `is_essential`: obligatorio en `EXPENSE`, `NULL` en `INCOME`.
-- **Categorías fijas** (14: 6 INCOME + 8 EXPENSE), sembradas en
-  `supabase/migrations/0002_seed_categories.sql`, no editables por el usuario. FK
-  compuesta `(category_id, transaction_type)` garantiza a nivel de BD que la categoría
-  corresponde al tipo. El snapshot de transactions guarda `category_code` (texto
-  estable), no una FK viva, para sobrevivir a cambios del catálogo.
+- **Categorías fijas** (15: 6 INCOME + 9 EXPENSE), sembradas en
+  `supabase/migrations/0002_seed_categories.sql` (+ `0004` agrega `taxes`/Impuestos),
+  no editables por el usuario. FK compuesta `(category_id, transaction_type)` garantiza
+  a nivel de BD que la categoría corresponde al tipo. El snapshot de transactions
+  guarda `category_code` (texto estable), no una FK viva, para sobrevivir a cambios del
+  catálogo. La paleta valida 8 hues por tipo; egreso tiene 9 categorías, así que
+  `taxes` usa el **gris neutro** a propósito (no se inventa un 9º hue) — ver comentario
+  en `frontend/src/lib/colors.ts`.
 
 ## Arquitectura backend (Clean Architecture)
 `domain → application → infrastructure/interfaces`. Dependencias apuntan al dominio;

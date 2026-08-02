@@ -54,9 +54,14 @@ docker compose up -d --build
 - API docs: http://localhost:8000/docs
 
 Las migraciones de `supabase/migrations/` se aplican solas al inicializar el
-Postgres local, en orden por nombre: `0001` esquema, `0002` seed de las 14
-categorías fijas, `0003` seed de plantillas de ejemplo (datos de dev, editables
-desde la UI). `docker compose down -v` resetea los datos.
+Postgres local, en orden por nombre: `0001` esquema, `0002` seed de las categorías
+fijas, `0003` seed de plantillas de ejemplo (datos de dev, editables desde la UI),
+`0004` agrega la categoría "Impuestos" (15 categorías: 6 ingreso + 9 gasto).
+`docker compose down -v` resetea los datos.
+
+> Nota: las migraciones corren **solo en el primer init** del volumen. Para aplicar
+> una migración nueva a una base ya creada sin borrar datos, correla a mano, p. ej.
+> `docker exec -i <db> psql -U finanzas -d finanzas < supabase/migrations/0004_seed_taxes_category.sql`.
 
 ## Desarrollo
 
@@ -130,3 +135,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Ingresos por categoría | [spec](docs/specs/2026-07-25-ingresos-por-categoria.md) | [plan](docs/plans/2026-07-25-ingresos-por-categoria.md) |
 | Plantillas agrupadas y ordenadas | [spec](docs/specs/2026-07-26-plantillas-agrupadas-y-ordenadas.md) | [plan](docs/plans/2026-07-26-plantillas-agrupadas-y-ordenadas.md) |
 | Totales en plantillas | [spec](docs/specs/2026-07-26-totales-en-plantillas.md) | [plan](docs/plans/2026-07-26-totales-en-plantillas.md) |
+| Categoría Impuestos | [spec](docs/specs/2026-07-26-categoria-impuestos.md) | [plan](docs/plans/2026-07-26-categoria-impuestos.md) |
