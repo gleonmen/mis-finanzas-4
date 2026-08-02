@@ -20,11 +20,14 @@ La app se organiza en cuatro pestañas:
   plantillas; ajustás valor y fecha, descartás lo que no aplique y confirmás todo
   en una sola operación atómica. Si el mes ya tiene movimientos, se bloquea.
 - **Movimientos** — los movimientos de cada mes con sus totales: corregí uno que
-  quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla.
-  Si vaciás un mes, la carga mensual vuelve a habilitarse para él.
+  quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla. Cada
+  movimiento tiene un **estado de pago** (pagado/pendiente; en ingresos, recibido/
+  pendiente de cobro). Un botón **Borrar todos** vacía el mes de una vez (y lo
+  destraba para recargarlo).
 - **Reportes** — vista mensual y anual: ingresos/gastos/neto, ingreso por categoría
   (de dónde viene la plata), gasto por categoría, cuánto del gasto es esencial, y la
-  evolución mes a mes del año.
+  evolución mes a mes del año. En la mensual, dos medidores de **pagado vs pendiente**
+  (gastos e ingresos).
 
 Tres reglas de dominio que explican el resto:
 
@@ -58,8 +61,9 @@ docker compose up -d --build
 Las migraciones de `supabase/migrations/` se aplican solas al inicializar el
 Postgres local, en orden por nombre: `0001` esquema, `0002` seed de las categorías
 fijas, `0003` seed de plantillas de ejemplo (datos de dev, editables desde la UI),
-`0004` agrega la categoría "Impuestos" (15 categorías: 6 ingreso + 9 gasto).
-`docker compose down -v` resetea los datos.
+`0004` agrega la categoría "Impuestos" (15 categorías: 6 ingreso + 9 gasto), `0005`
+agrega el estado de pago (`payment_status`) a los movimientos. `docker compose down
+-v` resetea los datos.
 
 > Nota: las migraciones corren **solo en el primer init** del volumen. Para aplicar
 > una migración nueva a una base ya creada sin borrar datos, correla a mano, p. ej.
@@ -94,6 +98,7 @@ docker run --rm -v "$PWD":/app -w /app node:20-alpine \
 | `POST` | `/transactions` | Crear un movimiento suelto |
 | `PUT` | `/transactions/{id}` | Editar un movimiento (el tipo no cambia) |
 | `DELETE` | `/transactions/{id}` | Borrar un movimiento |
+| `DELETE` | `/transactions/{año}/{mes}` | Borrar todos los del mes (→ `{deleted}`) |
 | `GET` | `/reports/monthly/{año}/{mes}` | Paquete completo del reporte mensual |
 | `GET` | `/reports/annual/{año}` | Paquete completo del reporte anual |
 
@@ -139,3 +144,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Totales en plantillas | [spec](docs/specs/2026-07-26-totales-en-plantillas.md) | [plan](docs/plans/2026-07-26-totales-en-plantillas.md) |
 | Categoría Impuestos | [spec](docs/specs/2026-07-26-categoria-impuestos.md) | [plan](docs/plans/2026-07-26-categoria-impuestos.md) |
 | Gráficas en plantillas | [spec](docs/specs/2026-07-26-graficas-en-plantillas.md) | [plan](docs/plans/2026-07-26-graficas-en-plantillas.md) |
+| Estado de pago y borrado masivo | [spec](docs/specs/2026-07-26-estado-de-pago-y-borrado-masivo.md) | [plan](docs/plans/2026-07-26-estado-de-pago-y-borrado-masivo.md) |

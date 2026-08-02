@@ -44,6 +44,13 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   existente e ignora el payload). Un movimiento ad-hoc se graba `ONE_TIME` con
   `template_id` NULL. Borrar todos los movimientos de un mes **libera el guard** y
   permite recargarlo — es la vía para rehacer un mes mal cargado.
+- **Estado de pago** — columna `payment_status` (PAID/PENDING) en transactions
+  (migración `0005`, backfill PAID → default PENDING); **no es snapshot**, es estado
+  mutable. Rótulos por tipo (gasto pagado/pendiente de pago; ingreso recibido/
+  pendiente de cobro). Los cargados/nuevos nacen PENDING; no afecta totales ni
+  reportes por categoría (suman todo). Borrado masivo: `DELETE /transactions/{y}/{m}`.
+  Reportes mensual: dos medidores pagado/pendiente (solo mensual). El estado desglosa,
+  no filtra.
 
 Frontend: navegación por **tabs en estado local** (sin router). Specs en `docs/specs/`
 y planes en `docs/plans/` (emparejados por fecha-título).
