@@ -18,6 +18,7 @@ export const categoryNames: Record<string, string> = {
   lifestyle: "Entretenimiento y Estilo de Vida",
   debt_finance: "Deudas y Finanzas",
   savings_investment: "Ahorro e Inversión",
+  taxes: "Impuestos",
 };
 
 export const transactionTypeNames: Record<string, string> = {

@@ -41,7 +41,15 @@ const SLOTS_DARK = [
   "#e66767",
 ];
 
-/** Expense categories, in fixed slot order (8 categories -> 8 slots). */
+/**
+ * Expense categories, in fixed slot order (8 categories -> 8 validated slots).
+ *
+ * NOTE: "taxes" (Impuestos) is a 9th expense category and is intentionally NOT
+ * listed here. There is no 9th CVD-safe hue (8 is the palette ceiling), so it
+ * falls through categoryColor() to the neutral gray OTHER_COLOR — a deliberate
+ * decision. Do NOT "fix" it by adding a 9th slot: that would break the validated
+ * palette. Identity for taxes comes from its label, not its color.
+ */
 const EXPENSE_ORDER = [
   "housing_utilities",
   "food_household",
