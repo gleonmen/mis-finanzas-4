@@ -49,8 +49,8 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   mutable. Rótulos por tipo (gasto pagado/pendiente de pago; ingreso recibido/
   pendiente de cobro). Los cargados/nuevos nacen PENDING; no afecta totales ni
   reportes por categoría (suman todo). Borrado masivo: `DELETE /transactions/{y}/{m}`.
-  Reportes mensual: dos medidores pagado/pendiente (solo mensual). El estado desglosa,
-  no filtra.
+  Movimientos muestra dos medidores pagado/pendiente del mes (calculados en el front
+  desde los items). El estado desglosa, no filtra.
 
 Frontend: navegación por **tabs en estado local** (sin router). Specs en `docs/specs/`
 y planes en `docs/plans/` (emparejados por fecha-título).

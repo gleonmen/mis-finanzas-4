@@ -22,12 +22,12 @@ La app se organiza en cuatro pestañas:
 - **Movimientos** — los movimientos de cada mes con sus totales: corregí uno que
   quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla. Cada
   movimiento tiene un **estado de pago** (pagado/pendiente; en ingresos, recibido/
-  pendiente de cobro). Un botón **Borrar todos** vacía el mes de una vez (y lo
-  destraba para recargarlo).
+  pendiente de cobro). Muestra dos medidores de **pagado vs pendiente** (gastos e
+  ingresos) del mes. Un botón **Borrar todos** vacía el mes de una vez (y lo destraba
+  para recargarlo).
 - **Reportes** — vista mensual y anual: ingresos/gastos/neto, ingreso por categoría
   (de dónde viene la plata), gasto por categoría, cuánto del gasto es esencial, y la
-  evolución mes a mes del año. En la mensual, dos medidores de **pagado vs pendiente**
-  (gastos e ingresos).
+  evolución mes a mes del año.
 
 Tres reglas de dominio que explican el resto:
 
