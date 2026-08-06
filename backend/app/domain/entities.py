@@ -86,6 +86,15 @@ class CategoryAmount:
 
 
 @dataclass(frozen=True)
+class ConceptAmount:
+    """Total expense for one concept (name) within a period, with its category."""
+
+    name: str
+    category_code: str
+    amount: Decimal
+
+
+@dataclass(frozen=True)
 class EssentialSplit:
     """Expense split by is_essential. Income does not participate."""
 

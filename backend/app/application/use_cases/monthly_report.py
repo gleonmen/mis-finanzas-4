@@ -4,7 +4,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.application.use_cases.report_rules import collapse_to_top, month_range
-from app.domain.entities import CategoryAmount, EssentialSplit, PeriodTotals
+from app.domain.entities import (
+    CategoryAmount,
+    ConceptAmount,
+    EssentialSplit,
+    PeriodTotals,
+)
 from app.domain.repositories import ReportRepository
 
 
@@ -21,6 +26,8 @@ class MonthlyReportResult:
     # folding: the full list feeds both the chart and the table.
     income_by_category: list[CategoryAmount]
     essential: EssentialSplit
+    # Top 5 expense concepts (name+category), ranked across all categories.
+    top_expense_concepts: list[ConceptAmount]
 
 
 class MonthlyReport:
@@ -44,4 +51,5 @@ class MonthlyReport:
             by_category_chart=collapse_to_top(by_category),
             income_by_category=self._repo.income_by_category(start, end),
             essential=essential,
+            top_expense_concepts=self._repo.top_expense_concepts(start, end),
         )

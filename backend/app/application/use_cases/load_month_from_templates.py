@@ -11,6 +11,7 @@ from app.application.errors import (
     InvalidDraftLineError,
     MonthAlreadyLoadedError,
 )
+from app.application.use_cases.transaction_rules import normalize_concept
 from app.domain.entities import PaymentStatus, Transaction
 from app.domain.repositories import TemplateRepository, TransactionRepository
 
@@ -72,7 +73,7 @@ class LoadMonthFromTemplates:
                 Transaction(
                     transaction_type=template.transaction_type,
                     category_code=template.category_code,
-                    name=template.name,
+                    name=normalize_concept(template.name),
                     is_essential=template.is_essential,
                     frequency=template.frequency,
                     amount=line.amount,

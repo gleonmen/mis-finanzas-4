@@ -10,6 +10,7 @@ from app.application.use_cases.report_rules import (
 )
 from app.domain.entities import (
     CategoryAmount,
+    ConceptAmount,
     EssentialSplit,
     MonthPoint,
     PeriodTotals,
@@ -26,6 +27,7 @@ class AnnualReportResult:
     income_by_category: list[CategoryAmount]
     essential: EssentialSplit
     monthly_series: list[MonthPoint]  # always 12 points, in order
+    top_expense_concepts: list[ConceptAmount]
 
 
 class AnnualReport:
@@ -49,4 +51,5 @@ class AnnualReport:
             income_by_category=self._repo.income_by_category(start, end),
             essential=essential,
             monthly_series=series,
+            top_expense_concepts=self._repo.top_expense_concepts(start, end),
         )

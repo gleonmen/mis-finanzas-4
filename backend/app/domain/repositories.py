@@ -7,6 +7,7 @@ from datetime import date
 from app.domain.entities import (
     Category,
     CategoryAmount,
+    ConceptAmount,
     EssentialSplit,
     Frequency,
     MonthPoint,
@@ -111,6 +112,12 @@ class ReportRepository(ABC):
     @abstractmethod
     def income_by_category(self, start: date, end: date) -> list[CategoryAmount]:
         """Income totals per category, ordered by amount descending."""
+
+    @abstractmethod
+    def top_expense_concepts(
+        self, start: date, end: date, limit: int = 5
+    ) -> list[ConceptAmount]:
+        """Top expense concepts (by name+category), ordered by amount desc, capped."""
 
     @abstractmethod
     def essential_split(self, start: date, end: date) -> EssentialSplit:

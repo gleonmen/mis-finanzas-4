@@ -10,6 +10,7 @@ from app.interfaces.api.deps import AnnualReportDep, MonthlyReportDep
 from app.interfaces.api.schemas import (
     AnnualReportOut,
     CategoryAmountOut,
+    ConceptAmountOut,
     EssentialSplitOut,
     MonthPointOut,
     MonthlyReportOut,
@@ -37,6 +38,15 @@ def _essential(e) -> EssentialSplitOut:
     return EssentialSplitOut(essential=e.essential, non_essential=e.non_essential)
 
 
+def _concepts(items) -> list[ConceptAmountOut]:
+    return [
+        ConceptAmountOut(
+            name=c.name, category_code=c.category_code, amount=c.amount
+        )
+        for c in items
+    ]
+
+
 @router.get("/monthly/{year}/{month}", response_model=MonthlyReportOut)
 def monthly_report(
     year: YearPath, month: MonthPath, use_case: MonthlyReportDep
@@ -53,6 +63,7 @@ def monthly_report(
         by_category_chart=_categories(result.by_category_chart),
         income_by_category=_categories(result.income_by_category),
         essential=_essential(result.essential),
+        top_expense_concepts=_concepts(result.top_expense_concepts),
     )
 
 
@@ -75,4 +86,5 @@ def annual_report(year: YearPath, use_case: AnnualReportDep) -> AnnualReportOut:
             )
             for p in result.monthly_series
         ],
+        top_expense_concepts=_concepts(result.top_expense_concepts),
     )

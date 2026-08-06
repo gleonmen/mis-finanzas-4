@@ -15,6 +15,7 @@ from app.application.use_cases.report_rules import (
 )
 from app.domain.entities import (
     CategoryAmount,
+    ConceptAmount,
     EssentialSplit,
     MonthPoint,
     PeriodTotals,
@@ -63,6 +64,19 @@ class FakeReportRepo:
                 non += r["amount"]
         return EssentialSplit(essential=ess, non_essential=non)
 
+    def top_expense_concepts(self, start, end, limit=5):
+        acc = {}
+        for r in self._in(start, end):
+            if r["type"] != "EXPENSE":
+                continue
+            key = (r["name"], r["category"])
+            acc[key] = acc.get(key, ZERO) + r["amount"]
+        ordered = sorted(acc.items(), key=lambda kv: kv[1], reverse=True)[:limit]
+        return [
+            ConceptAmount(name=n, category_code=c, amount=a)
+            for (n, c), a in ordered
+        ]
+
     def monthly_series(self, year):
         start, end = date(year, 1, 1), date(year + 1, 1, 1)
         by_month = {}
@@ -80,10 +94,11 @@ class FakeReportRepo:
         ]
 
 
-def row(type_, category, essential, amount, d):
+def row(type_, category, essential, amount, d, name=None):
     return {
         "type": type_,
         "category": category,
+        "name": name if name is not None else category,
         "essential": essential,
         "amount": Decimal(amount),
         "date": d,
@@ -234,6 +249,50 @@ def test_income_by_category_empty_when_no_income():
     ])
     result = MonthlyReport(repo).execute(2026, 7)
     assert result.income_by_category == []
+
+
+# --- top expense concepts --------------------------------------------------
+
+def test_top_concepts_ranked_desc_and_limited_to_five():
+    rows = [
+        row("EXPENSE", "lifestyle", False, str(1000 * i), date(2026, 7, i), name=f"c{i}")
+        for i in range(1, 8)  # 7 distinct concepts
+    ]
+    result = MonthlyReport(FakeReportRepo(rows)).execute(2026, 7)
+    top = result.top_expense_concepts
+    assert len(top) == 5  # capped
+    amounts = [c.amount for c in top]
+    assert amounts == sorted(amounts, reverse=True)  # desc
+    assert top[0].name == "c7"  # largest
+
+
+def test_top_concepts_group_by_name_and_category():
+    rows = [
+        row("EXPENSE", "lifestyle", False, "100", date(2026, 7, 1), name="Netflix"),
+        row("EXPENSE", "lifestyle", False, "100", date(2026, 7, 15), name="Netflix"),
+        # same name, different category -> a separate row
+        row("EXPENSE", "debt_finance", True, "50", date(2026, 7, 20), name="Netflix"),
+    ]
+    top = MonthlyReport(FakeReportRepo(rows)).execute(2026, 7).top_expense_concepts
+    lifestyle = next(c for c in top if c.category_code == "lifestyle")
+    debt = next(c for c in top if c.category_code == "debt_finance")
+    assert lifestyle.name == "Netflix" and lifestyle.amount == Decimal("200")
+    assert debt.name == "Netflix" and debt.amount == Decimal("50")
+
+
+def test_top_concepts_ignores_income_and_empty():
+    rows = [row("INCOME", "salaries", None, "5000", date(2026, 7, 1), name="Sueldo")]
+    assert MonthlyReport(FakeReportRepo(rows)).execute(2026, 7).top_expense_concepts == []
+    assert MonthlyReport(FakeReportRepo()).execute(2026, 7).top_expense_concepts == []
+
+
+def test_annual_top_concepts_present():
+    rows = [
+        row("EXPENSE", "transport", True, "900000", date(2026, 3, 1), name="Soat"),
+        row("EXPENSE", "lifestyle", False, "44900", date(2026, 9, 1), name="Netflix"),
+    ]
+    top = AnnualReport(FakeReportRepo(rows)).execute(2026).top_expense_concepts
+    assert [c.name for c in top] == ["Soat", "Netflix"]
 
 
 def test_annual_income_by_category_present():

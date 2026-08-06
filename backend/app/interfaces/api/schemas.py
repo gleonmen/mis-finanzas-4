@@ -116,6 +116,12 @@ class CategoryAmountOut(BaseModel):
     amount: Decimal
 
 
+class ConceptAmountOut(BaseModel):
+    name: str
+    category_code: str
+    amount: Decimal
+
+
 class EssentialSplitOut(BaseModel):
     essential: Decimal
     non_essential: Decimal
@@ -136,6 +142,7 @@ class MonthlyReportOut(BaseModel):
     by_category_chart: list[CategoryAmountOut]  # top N + OTHER
     income_by_category: list[CategoryAmountOut]  # income breakdown (no OTHER)
     essential: EssentialSplitOut
+    top_expense_concepts: list[ConceptAmountOut]
 
 
 class AnnualReportOut(BaseModel):
@@ -146,6 +153,7 @@ class AnnualReportOut(BaseModel):
     income_by_category: list[CategoryAmountOut]
     essential: EssentialSplitOut
     monthly_series: list[MonthPointOut]  # always 12 points
+    top_expense_concepts: list[ConceptAmountOut]
 
 
 # Defined here (after TotalsOut) so the reference resolves without a forward ref.

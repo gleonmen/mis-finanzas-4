@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.domain.entities import (
     Category,
     CategoryAmount,
+    ConceptAmount,
     EssentialSplit,
     Frequency,
     MonthPoint,
@@ -196,6 +197,23 @@ class SqlAlchemyReportRepository(ReportRepository):
 
     def income_by_category(self, start: date, end: date) -> list[CategoryAmount]:
         return self._by_category(start, end, TransactionType.INCOME)
+
+    def top_expense_concepts(
+        self, start: date, end: date, limit: int = 5
+    ) -> list[ConceptAmount]:
+        total = func.sum(TransactionModel.amount).label("total")
+        rows = self._session.execute(
+            select(TransactionModel.name, TransactionModel.category_code, total)
+            .where(self._in_range(start, end))
+            .where(TransactionModel.transaction_type == TransactionType.EXPENSE)
+            .group_by(TransactionModel.name, TransactionModel.category_code)
+            .order_by(total.desc())
+            .limit(limit)
+        ).all()
+        return [
+            ConceptAmount(name=name, category_code=code, amount=_dec(amount))
+            for name, code, amount in rows
+        ]
 
     def essential_split(self, start: date, end: date) -> EssentialSplit:
         rows = self._session.execute(

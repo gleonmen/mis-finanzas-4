@@ -226,7 +226,7 @@ def test_update_changes_editable_fields():
             is_essential=True,
         ),
     )
-    assert updated.name == "Taxi centro"
+    assert updated.name == "Taxi Centro"  # normalized (title-case)
     assert updated.amount == Decimal("75000")
     assert updated.occurred_on == date(2026, 7, 15)
     assert updated.category_code == "health"
@@ -300,6 +300,18 @@ def test_delete_missing_rejected():
 
 
 # --- payment status --------------------------------------------------------
+
+def test_create_normalizes_concept():
+    _, uc = make()
+    tx = uc.execute(expense_data(name="  netflix   hbo ")).transaction
+    assert tx.name == "Netflix Hbo"
+
+
+def test_create_whitespace_only_name_rejected():
+    _, uc = make()
+    with pytest.raises(TransactionValidationError):
+        uc.execute(expense_data(name="    "))
+
 
 def test_create_defaults_to_pending():
     _, uc = make()

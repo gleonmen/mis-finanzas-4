@@ -6,6 +6,15 @@ from app.domain.entities import TransactionData, TransactionType
 from app.domain.repositories import CategoryRepository
 
 
+def normalize_concept(name: str) -> str:
+    """Tidy a free-text concept for storage and grouping: trim, collapse internal
+    whitespace, and title-case each word. `str.split()` with no args does the
+    trim+collapse; `capitalize()` gives Title Case (acronyms like SOAT -> Soat, an
+    accepted cost of merging case variants). All-whitespace -> "".
+    """
+    return " ".join(word.capitalize() for word in name.split())
+
+
 def validate_and_normalize(
     data: TransactionData,
     category_repo: CategoryRepository,
@@ -26,7 +35,7 @@ def validate_and_normalize(
     """
     tx_type = forced_type if forced_type is not None else data.transaction_type
 
-    name = data.name.strip()
+    name = normalize_concept(data.name)
     if not name:
         raise TransactionValidationError("El concepto es obligatorio.")
 
