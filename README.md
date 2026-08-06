@@ -20,14 +20,15 @@ La app se organiza en cuatro pestañas:
   plantillas; ajustás valor y fecha, descartás lo que no aplique y confirmás todo
   en una sola operación atómica. Si el mes ya tiene movimientos, se bloquea.
 - **Movimientos** — los movimientos de cada mes con sus totales: corregí uno que
-  quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla. Cada
+  quedó mal, borralo, o registrá un gasto suelto que no venga de una plantilla. El
+  **concepto** se guarda normalizado (espacios limpios + title-case). Cada
   movimiento tiene un **estado de pago** (pagado/pendiente; en ingresos, recibido/
   pendiente de cobro). Muestra dos medidores de **pagado vs pendiente** (gastos e
   ingresos) del mes. Un botón **Borrar todos** vacía el mes de una vez (y lo destraba
   para recargarlo).
 - **Reportes** — vista mensual y anual: ingresos/gastos/neto, ingreso por categoría
-  (de dónde viene la plata), gasto por categoría, cuánto del gasto es esencial, y la
-  evolución mes a mes del año.
+  (de dónde viene la plata), gasto por categoría, **top 5 conceptos de gasto** (cruzando
+  categorías), cuánto del gasto es esencial, y la evolución mes a mes del año.
 
 Tres reglas de dominio que explican el resto:
 
@@ -145,3 +146,4 @@ Cada feature tiene su spec (qué se construye, desde la vista del usuario) y su 
 | Categoría Impuestos | [spec](docs/specs/2026-07-26-categoria-impuestos.md) | [plan](docs/plans/2026-07-26-categoria-impuestos.md) |
 | Gráficas en plantillas | [spec](docs/specs/2026-07-26-graficas-en-plantillas.md) | [plan](docs/plans/2026-07-26-graficas-en-plantillas.md) |
 | Estado de pago y borrado masivo | [spec](docs/specs/2026-07-26-estado-de-pago-y-borrado-masivo.md) | [plan](docs/plans/2026-07-26-estado-de-pago-y-borrado-masivo.md) |
+| Concepto normalizado y top-5 conceptos | [spec](docs/specs/2026-07-27-concepto-normalizado-y-top-conceptos.md) | [plan](docs/plans/2026-07-27-concepto-normalizado-y-top-conceptos.md) |

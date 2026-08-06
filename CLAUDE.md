@@ -51,6 +51,12 @@ Construido y verificado (cada feature recorrió el ciclo brainstorming → spec 
   reportes por categoría (suman todo). Borrado masivo: `DELETE /transactions/{y}/{m}`.
   Movimientos muestra dos medidores pagado/pendiente del mes (calculados en el front
   desde los items). El estado desglosa, no filtra.
+- **Concepto normalizado + top-5 conceptos** — el `name` del movimiento se normaliza
+  al guardar (trim + colapsar espacios + title-case) en create/update y en la carga
+  mensual (`transaction_rules.normalize_concept`); no hay migración retroactiva. En
+  Reportes (mensual y anual), bloque "Top conceptos de gasto": los 5 conceptos de mayor
+  gasto cruzando categorías (`GROUP BY name, category_code`), con concepto/categoría/
+  monto/% sobre el gasto del período (componente `TopConcepts`).
 
 Frontend: navegación por **tabs en estado local** (sin router). Specs en `docs/specs/`
 y planes en `docs/plans/` (emparejados por fecha-título).
