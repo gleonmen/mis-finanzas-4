@@ -20,6 +20,7 @@ import {
   transactionTypeNames,
 } from "../i18n/es";
 import { StatTiles } from "../components/StatTiles";
+import { EssentialMeter } from "../components/EssentialMeter";
 import { TransactionFormModal } from "../components/TransactionFormModal";
 import { Modal } from "../components/Modal";
 
@@ -170,6 +171,20 @@ export function Movements() {
 
   const items = data?.items ?? [];
 
+  // Paid vs pending per type, computed from the loaded movements (no extra call);
+  // the meters reflect exactly what is listed.
+  function paymentSplit(type: "INCOME" | "EXPENSE") {
+    let paid = 0;
+    let pending = 0;
+    for (const tx of items) {
+      if (tx.transaction_type !== type) continue;
+      const amt = Number(tx.amount);
+      if (tx.payment_status === "PAID") paid += amt;
+      else pending += amt;
+    }
+    return { essential: String(paid), non_essential: String(pending) };
+  }
+
   return (
     <section className="movements">
       <h1>{t.title}</h1>
@@ -209,6 +224,25 @@ export function Movements() {
         <div style={{ opacity: loading ? 0.5 : 1, transition: "opacity 120ms" }}>
           <h2 className="period-label">{formatMonthYear(ym.year, ym.month)}</h2>
           <StatTiles totals={data.totals} />
+
+          {items.length > 0 && (
+            <div className="meter-row">
+              <EssentialMeter
+                split={paymentSplit("EXPENSE")}
+                title={t.paymentExpenseTitle}
+                emptyText={t.noExpenseMeter}
+                leftLabel={t.paid}
+                rightLabel={t.pendingToPay}
+              />
+              <EssentialMeter
+                split={paymentSplit("INCOME")}
+                title={t.paymentIncomeTitle}
+                emptyText={t.noIncomeMeter}
+                leftLabel={t.received}
+                rightLabel={t.pendingToCollect}
+              />
+            </div>
+          )}
 
           {items.length === 0 ? (
             <div className="banner banner-warning">{t.emptyState}</div>

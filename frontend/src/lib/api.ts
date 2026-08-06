@@ -112,11 +112,6 @@ export interface MonthPoint {
   net: string;
 }
 
-export interface PaymentSplit {
-  paid: string;
-  pending: string;
-}
-
 export interface MonthlyReport {
   year: number;
   month: number;
@@ -125,8 +120,6 @@ export interface MonthlyReport {
   by_category_chart: CategoryAmount[];
   income_by_category: CategoryAmount[];
   essential: EssentialSplit;
-  expense_payment: PaymentSplit;
-  income_payment: PaymentSplit;
 }
 
 export interface AnnualReport {

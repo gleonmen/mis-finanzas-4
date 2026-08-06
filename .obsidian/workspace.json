@@ -186,9 +186,11 @@
   "active": "cf4798e4cc9d8cc5",
   "lastOpenFiles": [
     "frontend/dist/index.html",
+    "frontend/dist/assets/index-cC99nOa5.js",
+    "frontend/dist/assets/index-Dljf3a89.css",
+    "frontend/dist/assets",
     "frontend/dist/assets/index-iRR-wiVh.js",
     "frontend/dist/assets/index-DcXfGSDp.css",
-    "frontend/dist/assets",
     "backend/app/application/use_cases/__pycache__/delete_month_transactions.cpython-312.pyc",
     "backend/app/application/use_cases/delete_month_transactions.py",
     "supabase/migrations/0005_add_payment_status.sql",

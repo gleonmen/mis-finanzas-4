@@ -153,32 +153,6 @@ export function Reports() {
               />
 
               <EssentialMeter split={report.essential} />
-
-              {/* Payment meters: monthly only. */}
-              {view === "monthly" && monthly && (
-                <>
-                  <EssentialMeter
-                    split={{
-                      essential: monthly.expense_payment.paid,
-                      non_essential: monthly.expense_payment.pending,
-                    }}
-                    title={t.expensePaymentTitle}
-                    emptyText={t.noExpense}
-                    leftLabel={t.paid}
-                    rightLabel={t.pendingToPay}
-                  />
-                  <EssentialMeter
-                    split={{
-                      essential: monthly.income_payment.paid,
-                      non_essential: monthly.income_payment.pending,
-                    }}
-                    title={t.incomePaymentTitle}
-                    emptyText={t.noIncomeMeter}
-                    leftLabel={t.received}
-                    rightLabel={t.pendingToCollect}
-                  />
-                </>
-              )}
             </>
           )}
         </div>

@@ -17,7 +17,6 @@ from app.domain.entities import (
     CategoryAmount,
     EssentialSplit,
     MonthPoint,
-    PaymentSplit,
     PeriodTotals,
 )
 
@@ -80,21 +79,9 @@ class FakeReportRepo:
             for m, (i, e) in sorted(by_month.items())
         ]
 
-    def payment_split(self, start, end, tx_type):
-        paid, pending = ZERO, ZERO
-        for r in self._in(start, end):
-            if r["type"] != tx_type:
-                continue
-            if r.get("status", "PAID") == "PAID":
-                paid += r["amount"]
-            else:
-                pending += r["amount"]
-        return PaymentSplit(paid=paid, pending=pending)
 
-
-def row(type_, category, essential, amount, d, status="PAID"):
+def row(type_, category, essential, amount, d):
     return {
-        "status": status,
         "type": type_,
         "category": category,
         "essential": essential,
@@ -262,34 +249,3 @@ def test_annual_income_by_category_present():
     assert sum(c.amount for c in result.income_by_category) == result.totals.income
 
 
-# --- payment split (monthly only) -----------------------------------------
-
-def test_monthly_payment_split_by_type_and_invariant():
-    repo = FakeReportRepo([
-        row("EXPENSE", "transport", True, "250000", date(2026, 7, 1), status="PAID"),
-        row("EXPENSE", "lifestyle", False, "44900", date(2026, 7, 2), status="PENDING"),
-        row("INCOME", "salaries", None, "3500000", date(2026, 7, 5), status="PENDING"),
-        row("INCOME", "rentals", None, "1200000", date(2026, 7, 6), status="PAID"),
-    ])
-    result = MonthlyReport(repo).execute(2026, 7)
-    assert result.expense_payment.paid == Decimal("250000")
-    assert result.expense_payment.pending == Decimal("44900")
-    assert result.income_payment.paid == Decimal("1200000")
-    assert result.income_payment.pending == Decimal("3500000")
-    # Invariant: paid + pending == the type total.
-    assert (
-        result.expense_payment.paid + result.expense_payment.pending
-        == result.totals.expense
-    )
-    assert (
-        result.income_payment.paid + result.income_payment.pending
-        == result.totals.income
-    )
-
-
-def test_monthly_payment_split_empty_period():
-    result = MonthlyReport(FakeReportRepo()).execute(2026, 7)
-    assert result.expense_payment.paid == ZERO
-    assert result.expense_payment.pending == ZERO
-    assert result.income_payment.paid == ZERO
-    assert result.income_payment.pending == ZERO

@@ -111,11 +111,6 @@ class TotalsOut(BaseModel):
     net: Decimal  # may be negative
 
 
-class PaymentSplitOut(BaseModel):
-    paid: Decimal
-    pending: Decimal
-
-
 class CategoryAmountOut(BaseModel):
     category_code: str  # "OTHER" for the folded tail
     amount: Decimal
@@ -141,8 +136,6 @@ class MonthlyReportOut(BaseModel):
     by_category_chart: list[CategoryAmountOut]  # top N + OTHER
     income_by_category: list[CategoryAmountOut]  # income breakdown (no OTHER)
     essential: EssentialSplitOut
-    expense_payment: PaymentSplitOut  # paid vs pending (expenses)
-    income_payment: PaymentSplitOut  # received vs pending (income)
 
 
 class AnnualReportOut(BaseModel):

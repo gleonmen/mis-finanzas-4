@@ -14,7 +14,6 @@ from app.domain.entities import (
     EssentialSplit,
     Frequency,
     MonthPoint,
-    PaymentSplit,
     PaymentStatus,
     PeriodTotals,
     Template,
@@ -234,23 +233,6 @@ class SqlAlchemyReportRepository(ReportRepository):
                 MonthPoint(month=int(month), income=inc, expense=exp, net=inc - exp)
             )
         return points
-
-    def payment_split(
-        self, start: date, end: date, tx_type: TransactionType
-    ) -> PaymentSplit:
-        paid_sum = func.sum(TransactionModel.amount).filter(
-            TransactionModel.payment_status == PaymentStatus.PAID
-        )
-        pending_sum = func.sum(TransactionModel.amount).filter(
-            TransactionModel.payment_status == PaymentStatus.PENDING
-        )
-        row = self._session.execute(
-            select(paid_sum, pending_sum)
-            .select_from(TransactionModel)
-            .where(self._in_range(start, end))
-            .where(TransactionModel.transaction_type == tx_type)
-        ).one()
-        return PaymentSplit(paid=_dec(row[0]), pending=_dec(row[1]))
 
 
 class SqlAlchemyTransactionRepository(TransactionRepository):

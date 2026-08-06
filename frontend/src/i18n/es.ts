@@ -81,6 +81,15 @@ export const es = {
       `Esta acción no se puede deshacer. El mes quedará libre para volver a cargarlo.`,
     deletedAll: (count: number) => `Se borraron ${count} movimiento(s).`,
     deleteAllError: "No se pudieron borrar los movimientos. Intentá de nuevo.",
+    // payment meters (by month)
+    paymentExpenseTitle: "Gastos: pagado vs pendiente",
+    paymentIncomeTitle: "Ingresos: recibido vs pendiente",
+    paid: "Pagado",
+    pendingToPay: "Pendiente de pago",
+    received: "Recibido",
+    pendingToCollect: "Pendiente de cobro",
+    noExpenseMeter: "No hay gastos en este mes.",
+    noIncomeMeter: "No hay ingresos en este mes.",
     // form
     fieldStatus: "Estado",
     formNewTitle: "Nuevo movimiento",
@@ -144,14 +153,6 @@ export const es = {
     essentialTitle: "Cuánto de tu gasto es esencial",
     essential: "Esencial",
     nonEssential: "No esencial",
-    // payment meters (monthly)
-    expensePaymentTitle: "Gastos: pagado vs pendiente",
-    incomePaymentTitle: "Ingresos: recibido vs pendiente",
-    paid: "Pagado",
-    pendingToPay: "Pendiente de pago",
-    received: "Recibido",
-    pendingToCollect: "Pendiente de cobro",
-    noIncomeMeter: "No hay ingresos en este período.",
     trendTitle: "Evolución mes a mes",
     netByMonthTitle: "Neto por mes",
     // tables

@@ -10,13 +10,11 @@ from app.domain.entities import (
     EssentialSplit,
     Frequency,
     MonthPoint,
-    PaymentSplit,
     PeriodTotals,
     Template,
     TemplateData,
     Transaction,
     TransactionData,
-    TransactionType,
 )
 
 
@@ -122,9 +120,3 @@ class ReportRepository(ABC):
     def monthly_series(self, year: int) -> list[MonthPoint]:
         """Per-month totals for the year. Only months WITH data are returned;
         the use case pads the year to 12 points."""
-
-    @abstractmethod
-    def payment_split(
-        self, start: date, end: date, tx_type: TransactionType
-    ) -> PaymentSplit:
-        """Amounts split into paid / pending for one transaction type."""

@@ -4,13 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.application.use_cases.report_rules import collapse_to_top, month_range
-from app.domain.entities import (
-    CategoryAmount,
-    EssentialSplit,
-    PaymentSplit,
-    PeriodTotals,
-    TransactionType,
-)
+from app.domain.entities import CategoryAmount, EssentialSplit, PeriodTotals
 from app.domain.repositories import ReportRepository
 
 
@@ -27,9 +21,6 @@ class MonthlyReportResult:
     # folding: the full list feeds both the chart and the table.
     income_by_category: list[CategoryAmount]
     essential: EssentialSplit
-    # Paid vs pending for each type (fuels the two payment meters). Monthly only.
-    expense_payment: PaymentSplit
-    income_payment: PaymentSplit
 
 
 class MonthlyReport:
@@ -53,10 +44,4 @@ class MonthlyReport:
             by_category_chart=collapse_to_top(by_category),
             income_by_category=self._repo.income_by_category(start, end),
             essential=essential,
-            expense_payment=self._repo.payment_split(
-                start, end, TransactionType.EXPENSE
-            ),
-            income_payment=self._repo.payment_split(
-                start, end, TransactionType.INCOME
-            ),
         )

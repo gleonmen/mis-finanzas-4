@@ -94,14 +94,6 @@ class EssentialSplit:
 
 
 @dataclass(frozen=True)
-class PaymentSplit:
-    """Amounts split by payment status, for one transaction type in a period."""
-
-    paid: Decimal
-    pending: Decimal
-
-
-@dataclass(frozen=True)
 class MonthPoint:
     """One month of the annual series. Months without data come through as zeros."""
 

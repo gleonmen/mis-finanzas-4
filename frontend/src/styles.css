@@ -569,6 +569,18 @@ button:disabled {
   border-top: 1px solid var(--border);
 }
 
+/* Two meters side by side (payment meters in Movements) */
+.meter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.meter-row .card {
+  margin-bottom: 0;
+}
+
 /* Essential meter (a single ratio — not a 2-slice pie) */
 .meter-headline {
   margin: 0 0 0.6rem;
