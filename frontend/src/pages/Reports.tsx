@@ -12,6 +12,7 @@ import { StatTiles } from "../components/StatTiles";
 import { CategoryBars } from "../components/CategoryBars";
 import { EssentialMeter } from "../components/EssentialMeter";
 import { AnnualTrend } from "../components/AnnualTrend";
+import { TopConcepts } from "../components/TopConcepts";
 
 type View = "monthly" | "annual";
 
@@ -150,6 +151,12 @@ export function Reports() {
               <CategoryBars
                 chartData={report.by_category_chart}
                 fullData={report.by_category}
+              />
+
+              {/* Top expense concepts, across categories (monthly + annual). */}
+              <TopConcepts
+                concepts={report.top_expense_concepts}
+                totalExpense={Number(report.totals.expense)}
               />
 
               <EssentialMeter split={report.essential} />

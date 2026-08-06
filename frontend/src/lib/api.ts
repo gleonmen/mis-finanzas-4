@@ -100,6 +100,12 @@ export interface CategoryAmount {
   amount: string;
 }
 
+export interface ConceptAmount {
+  name: string;
+  category_code: string;
+  amount: string;
+}
+
 export interface EssentialSplit {
   essential: string;
   non_essential: string;
@@ -120,6 +126,7 @@ export interface MonthlyReport {
   by_category_chart: CategoryAmount[];
   income_by_category: CategoryAmount[];
   essential: EssentialSplit;
+  top_expense_concepts: ConceptAmount[];
 }
 
 export interface AnnualReport {
@@ -130,6 +137,7 @@ export interface AnnualReport {
   income_by_category: CategoryAmount[];
   essential: EssentialSplit;
   monthly_series: MonthPoint[];
+  top_expense_concepts: ConceptAmount[];
 }
 
 export class ApiError extends Error {
